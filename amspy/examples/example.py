@@ -59,7 +59,7 @@ print ("001 - Creating a Media Asset...")
 response = amspy.create_media_asset(access_token, name)
 if (response.status_code == 201):
 	resjson = response.json()
-	asset_id = str(resjson['Id']);
+	asset_id = str(resjson['d']['Id']);
 	print("POST Status: " + str(response.status_code))
 	print("Media Asset Name: " + name)
 	print("Media Asset Id: " + asset_id)
@@ -72,9 +72,9 @@ response = amspy.list_media_asset(access_token, asset_id)
 if (response.status_code == 200):
 	resjson = response.json()
 	print("GET Status: " + str(response.status_code))
-	print("Media Asset Name: " + str(resjson['Name']))
-	print("Media Asset Storage Account Name: " + str(resjson['StorageAccountName']))
-	print("Media Asset Uri: " + str(resjson['Uri']))
+	print("Media Asset Name: " + str(resjson['d']['Name']))
+	print("Media Asset Storage Account Name: " + str(resjson['d']['StorageAccountName']))
+	print("Media Asset Uri: " + str(resjson['d']['Uri']))
 else:
 	print("GET Status: " + str(response.status_code) + " - Media Asset: '" + name + "' Listing ERROR." + str(response.content))
 
@@ -83,11 +83,11 @@ print ("\n003 - Creating a Media Assetfile (for the video file)...")
 response = amspy.create_media_assetfile(access_token, asset_id, video_name, "false", "false")
 if (response.status_code == 201):
 	resjson = response.json()
-	video_assetfile_id = str(resjson['Id']);
+	video_assetfile_id = str(resjson['d']['Id']);
 	print("POST Status: " + str(response.status_code))
-	print("Media Assetfile Name: " + str(resjson['Name']))
+	print("Media Assetfile Name: " + str(resjson['d']['Name']))
 	print("Media Assetfile Id: " + video_assetfile_id)
-	print("Media Assetfile IsPrimary: " + str(resjson['IsPrimary']))
+	print("Media Assetfile IsPrimary: " + str(resjson['d']['IsPrimary']))
 else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + video_name + "' Creation ERROR." + str(response.content))
 
@@ -96,11 +96,11 @@ print ("\n004 - Creating a Media Assetfile (for the manifest file)...")
 response = amspy.create_media_assetfile(access_token, asset_id, ism_name, "false", "true")
 if (response.status_code == 201):
 	resjson = response.json()
-	ism_assetfile_id = str(resjson['Id']);
+	ism_assetfile_id = str(resjson['d']['Id']);
 	print("POST Status: " + str(response.status_code))
-	print("Media Assetfile Name: " + str(resjson['Name']))
+	print("Media Assetfile Name: " + str(resjson['d']['Name']))
 	print("Media Assetfile Id: " + ism_assetfile_id)
-	print("Media Assetfile IsPrimary: " + str(resjson['IsPrimary']))
+	print("Media Assetfile IsPrimary: " + str(resjson['d']['IsPrimary']))
 else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + ism_name + "' Creation ERROR." + str(response.content))
 
@@ -110,10 +110,10 @@ duration = "440"
 response = amspy.set_asset_accesspolicy(access_token, duration)
 if (response.status_code == 201):
 	resjson = response.json()
-	accesspolicy_id = str(resjson['Id']);
+	accesspolicy_id = str(resjson['d']['Id']);
 	print("POST Status: " + str(response.status_code))
 	print("Asset Access Policy Id: " + accesspolicy_id)
-	print("Asset Access Policy Duration in Minutes: " + str(resjson['DurationInMinutes']))
+	print("Asset Access Policy Duration in Minutes: " + str(resjson['d']['DurationInMinutes']))
 else:
 	print("POST Status: " + str(response.status_code) + " - Asset Access Policy: '" + name + "' Creation ERROR." + str(response.content))
 
@@ -123,7 +123,7 @@ response = amspy.list_asset_accesspolicy(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
 	print("GET Status: " + str(response.status_code))
-	for ap in resjson['value']:
+	for ap in resjson['d']['results']:
 		print("Asset Access Policie Id: " + str(ap['Id']))
 else:
 	print("GET Status: " + str(response.status_code) + " - Asset Access Policy: '" + name + "' List ERROR." + str(response.content))
@@ -139,11 +139,11 @@ print ("\n007 - Creating a SAS Locator...")
 response = amspy.create_sas_locator(access_token, asset_id, accesspolicy_id)
 if (response.status_code == 201):
 	resjson = response.json()
-	saslocator_id = str(resjson['Id']);
-	saslocator_baseuri = str(resjson['BaseUri']);
-	saslocator_cac = str(resjson['ContentAccessComponent']);
+	saslocator_id = str(resjson['d']['Id']);
+	saslocator_baseuri = str(resjson['d']['BaseUri']);
+	saslocator_cac = str(resjson['d']['ContentAccessComponent']);
 	print("POST Status: " + str(response.status_code))
-	print("SAS URL Locator StartTime: " + str(resjson['StartTime']))
+	print("SAS URL Locator StartTime: " + str(resjson['d']['StartTime']))
 	print("SAS URL Locator Id: " + saslocator_id)
 	print("SAS URL Locator Base URI: " + saslocator_baseuri)
 	print("SAS URL Locator Content Access Component: " + saslocator_cac)
@@ -156,7 +156,7 @@ response = amspy.list_sas_locator(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
 	print("GET Status: " + str(response.status_code))
-	for sl in resjson['value']:
+	for sl in resjson['d']['results']:
 		print("SAS Locator Id: " + str(sl['Id']))
 else:
 	print("GET Status: " + str(response.status_code) + " - SAS Locator: '" + name + "' List ERROR." + str(response.content))
