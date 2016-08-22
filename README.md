@@ -3,7 +3,7 @@
 get_access_token(account_name, account_key) - get the access token/authenticate
 create_media_asset(access_token, name) - create a media asset
 list_media_asset(access_token, asset_id) - list a media asset
-create_media_assetfile(access_token, asset_id, name) - create a media assetfile
+create_media_assetfile(access_token, asset_id, name, is_encrypted, is_primary) - create a media assetfile
 set_asset_accesspolicy(access_token, duration) - set the asset access policy
 list_asset_accesspolicy(access_token) - list an asset access policy
 create_sas_locator(access_token, asset_id, accesspolicy_id, starttime) - create a sas url locator for upload

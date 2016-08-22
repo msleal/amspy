@@ -35,12 +35,12 @@ def list_media_asset(access_token, asset_id):
     endpoint = ''.join([ams_rest_endpoint, full_path])
     return do_get(endpoint, full_path, access_token)
 
-# create_media_assetfile(access_token, asset_id, name)
+# create_media_assetfile(access_token, parent_asset_id, name, is_encrypted, is_primary)
 # create a media assetfile
-def create_media_assetfile(access_token, parent_asset_id, name):
+def create_media_assetfile(access_token, parent_asset_id, name, is_encrypted, is_primary):
     path = '/Files'
     endpoint = ''.join([ams_rest_endpoint, path])
-    body = '{"IsEncrypted": "false", "IsPrimary": "false", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
+    body = '{"IsEncrypted": "' + is_encrypted + '", "IsPrimary": "' + is_primary + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
     return do_post(endpoint, path, body, access_token)
 
 # update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name)
