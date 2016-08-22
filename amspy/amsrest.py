@@ -61,7 +61,7 @@ def set_asset_accesspolicy(access_token, duration):
     body = '{"Name": "NewUploadPolicy", "DurationInMinutes": "' + duration + '", "Permissions": "2"}'
     return do_post(endpoint, path, body, access_token)
 
-# list_asset_accesspolicy(access_token, asset_id)
+# list_asset_accesspolicy(access_token)
 # list a asset access policy
 def list_asset_accesspolicy(access_token):
     path = '/AccessPolicies'
@@ -86,7 +86,7 @@ def create_sas_locator(access_token, asset_id, accesspolicy_id):
     body = '{"AccessPolicyId":"' + accesspolicy_id + '", "AssetId":"' + asset_id + '", "Type":1 }'
     return do_post(endpoint, path, body, access_token)
 
-# list_sas_locator(access_token, saslocator_id)
+# list_sas_locator(access_token)
 # list a sas locator
 def list_sas_locator(access_token):
     path = '/Locators'
