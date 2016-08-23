@@ -54,9 +54,11 @@ ism_name = "movie.ism"
 video_path = "/home/architect/Movie/Start-2009/movie.mp4"
 ism_path = "/home/architect/Movie/Start-2009/movie.ism"
 xml_path = "validate_mp4.xml"
+job_definition = "Windows Azure Media Packager"
+processor_id = "nb:mpid:UUID:a2f9afe9-7146-4882-a5f7-da4a85e06a93"
 
 ### create an asset
-print ("001 - Creating a Media Asset")
+print ("001 >>> Creating a Media Asset")
 response = amspy.create_media_asset(access_token, name)
 if (response.status_code == 201):
 	resjson = response.json()
@@ -68,7 +70,7 @@ else:
 	print("POST Status.....................: " + str(response.status_code) + " - Media Asset: '" + name + "' Creation ERROR." + str(response.content))
 
 ### list an asset
-print ("\n002 - Listing a Media Asset")
+print ("\n002 >>> Listing a Media Asset")
 response = amspy.list_media_asset(access_token, asset_id)
 if (response.status_code == 200):
 	resjson = response.json()
@@ -81,7 +83,7 @@ else:
 	print("GET Status......................: " + str(response.status_code) + " - Media Asset: '" + name + "' Listing ERROR." + str(response.content))
 
 ### create an assetfile
-print ("\n003 - Creating a Media Assetfile (for the video file)")
+print ("\n003 >>> Creating a Media Assetfile (for the video file)")
 response = amspy.create_media_assetfile(access_token, asset_id, video_name, "false", "false")
 if (response.status_code == 201):
 	resjson = response.json()
@@ -94,7 +96,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + video_name + "' Creation ERROR." + str(response.content))
 
 ### create an assetfile
-print ("\n004 - Creating a Media Assetfile (for the manifest file)")
+print ("\n004 >>> Creating a Media Assetfile (for the manifest file)")
 response = amspy.create_media_assetfile(access_token, asset_id, ism_name, "false", "true")
 if (response.status_code == 201):
 	resjson = response.json()
@@ -107,7 +109,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + ism_name + "' Creation ERROR." + str(response.content))
 
 ### set an asset access policy
-print ("\n005 - Setting an Asset Access Policy")
+print ("\n005 >>> Setting an Asset Access Policy")
 duration = "440"
 response = amspy.set_asset_accesspolicy(access_token, duration)
 if (response.status_code == 201):
@@ -120,18 +122,18 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Asset Access Policy: '" + name + "' Creation ERROR." + str(response.content))
 
 ### list an asset access policies
-print ("\n006 - Listing a Asset Access Policies")
+print ("\n006 >>> Listing a Asset Access Policies")
 response = amspy.list_asset_accesspolicy(access_token, "")
 if (response.status_code == 200):
 	resjson = response.json()
-	print("GET Status: " + str(response.status_code))
+	print("GET Status......................: " + str(response.status_code))
 	for ap in resjson['d']['results']:
 		print("Asset Access Policie Id.........: " + str(ap['Id']))
 else:
 	print("GET Status: " + str(response.status_code) + " - Asset Access Policy: '" + name + "' List ERROR." + str(response.content))
 
 ### create a sas locator
-print ("\n007 - Creating a SAS Locator")
+print ("\n007 >>> Creating a SAS Locator")
 ## INFO: If you need to upload your files immediately, you should set your StartTime value to five minutes before the current time.
 #This is because there may be clock skew between your client machine and Media Services.
 #Also, your StartTime value must be in the following DateTime format: YYYY-MM-DDTHH:mm:ssZ (for example, "2014-05-23T17:53:50Z").
@@ -153,7 +155,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - SAS URL Locator: '" + name + "' Creation ERROR." + str(response.content))
 
 ### list the sas locator
-print ("\n008 - Listing a SAS Locator")
+print ("\n008 >>> Listing a SAS Locator")
 response = amspy.list_sas_locator(access_token, "")
 if (response.status_code == 200):
 	resjson = response.json()
@@ -164,7 +166,7 @@ else:
 	print("GET Status......................: " + str(response.status_code) + " - SAS Locator: '" + name + "' List ERROR." + str(response.content))
 
 ### upload the video file
-print ("\n009 - Uploading the Video File")
+print ("\n009 >>> Uploading the Video File")
 #datetime = datetime.datetime.now(pytz.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
 saslocator_video_url = ''.join([saslocator_baseuri, '/', video_name, saslocator_cac])
 with open(video_path, mode='rb') as file:
@@ -179,7 +181,7 @@ else:
 	print("POST Status.....................: " + str(response.status_code) + " - Video File: '" + video_name + "' Upload ERROR." + str(response.content))
 
 ### upload the manifest file
-print ("\n010 - Uploading the Manifest File")
+print ("\n010 >>> Uploading the Manifest File")
 saslocator_ism_url = ''.join([saslocator_baseuri, '/', ism_name, saslocator_cac])
 with open(ism_path, mode='rb') as file:
 	ism_content = file.read()
@@ -193,7 +195,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Video File: '" + ism_name + "' Upload ERROR." + str(response.content))
 
 ### update the assetfile
-print ("\n011 - Updating the Video Assetfile")
+print ("\n011 >>> Updating the Video Assetfile")
 response = amspy.update_media_assetfile(access_token, asset_id, video_assetfile_id, video_content_length, video_name)
 if (response.status_code == 204):
 	print("MERGE Status....................: " + str(response.status_code))
@@ -202,7 +204,7 @@ else:
 	print("MERGE Status....................: " + str(response.status_code) + " - Assetfile: '" + video_name + "' Update ERROR." + str(response.content))
 
 ### update the assetfile
-print ("\n012 - Updating the Manifest Assetfile")
+print ("\n012 >>> Updating the Manifest Assetfile")
 response = amspy.update_media_assetfile(access_token, asset_id, ism_assetfile_id, ism_content_length, ism_name)
 if (response.status_code == 204):
 	print("MERGE Status....................: " + str(response.status_code))
@@ -211,7 +213,7 @@ else:
 	print("MERGE Status....................: " + str(response.status_code) + " - Assetfile: '" + ism_name + "' Update ERROR." + str(response.content))
 
 ### delete the locator
-print ("\n013 - Deleting the Locator")
+print ("\n013 >>> Deleting the Locator")
 response = amspy.delete_sas_locator(access_token, saslocator_id)
 if (response.status_code == 204):
 	print("DELETE Status...................: " + str(response.status_code))
@@ -220,7 +222,7 @@ else:
 	print("DELETE Status...................: " + str(response.status_code) + " - SAS URL Locator: '" + saslocator_id + "' Delete ERROR." + str(response.content))
 
 ### delete the asset access policy
-print ("\n014 - Deleting the Acess Policy")
+print ("\n014 >>> Deleting the Acess Policy")
 response = amspy.delete_asset_accesspolicy(access_token, accesspolicy_id)
 if (response.status_code == 204):
 	print("DELETE Status...................: " + str(response.status_code))
@@ -229,9 +231,7 @@ else:
 	print("DELETE Status...................: " + str(response.status_code) + " - Asset Access Policy: '" + accesspolicy_id + "' Delete ERROR." + str(response.content))
 
 ## create a media job
-print ("\n015 - Creating a Media Job (task: validate mp4)")
-job_definition = "Windows Azure Media Packager"
-processor_id = "nb:mpid:UUID:a2f9afe9-7146-4882-a5f7-da4a85e06a93"
+print ("\n015 >>> Creating a Media Job (task: validate mp4)")
 with open(xml_path, mode='r') as file:
 	xml_content = file.read()
 response = amspy.create_media_job(access_token, "ValidateMP4", job_definition, processor_id, asset_id, xml_content)
