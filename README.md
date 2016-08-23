@@ -1,4 +1,6 @@
 #### Simple Python Library for Azure Media Services REST API
+The amspy is a library to provide a simple Azure Media Services REST interface for python. This is a personal project and NOT an official implementation of the Azure Media Services SDK for python. The only purpose of this library is for educational purposes, so people can have an easy way to understand how to interact with cloud REST apis, and learn from the examples provided in this module as well as the debug information available in the logs. Any feedback, comments or bugs, please send directly to the module owner, and go to https://azure.microsoft.com if you are looking for official Microsoft Azure SDKs.
+
 ```
 get_access_token(accountname, accountkey) - get the access token/authenticate
 list_media_asset(access_token, oid) - list media asset
