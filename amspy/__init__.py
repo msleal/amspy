@@ -8,4 +8,5 @@ License: MIT (see LICENSE.txt file for details)
 
 from .amsrest import get_access_token, create_media_asset, list_media_asset, create_media_assetfile, \
 	set_asset_accesspolicy, list_asset_accesspolicy, create_sas_locator, list_sas_locator, \
-	upload_block_blob, update_media_assetfile, delete_sas_locator, delete_asset_accesspolicy
+	upload_block_blob, update_media_assetfile, delete_sas_locator, delete_asset_accesspolicy, \
+	create_media_job, list_media_processor
