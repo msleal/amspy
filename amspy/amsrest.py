@@ -18,41 +18,53 @@ def get_access_token(accountname, accountkey):
     body = "grant_type=client_credentials&client_id=" + accountname + "&client_secret=" + accountkey_encoded + " &scope=urn%3aWindowsAzureMediaServices"
     return do_auth(ams_auth_endpoint, body)
 
-# list_media_asset(access_token, asset_id)
-# list a media asset
+# list_media_asset(access_token, oid)
+# list a media asset(s)
 def list_media_asset(access_token, oid):
     path = '/Assets'
-    if(oid != ""):
-    	path = ''.join([path, "('", oid, "')"])
-    endpoint = ''.join([ams_rest_endpoint, path])
-    return do_get(endpoint, path, access_token)
+    return helper_list(access_token, oid, path)
 
-# list_media_processor(access_token)
-# list the media processor
+# list_content_keys(access_token, oid)
+# list the content key(s)
+def list_content_keys(access_token, oid):
+    path = '/ContentKeys'
+    return helper_list(access_token, oid, path)
+
+# list_media_processor(access_token, oid)
+# list the media processor(s)
 def list_media_processor(access_token, oid):
     path = '/MediaProcessors'
-    if (oid != ""):
-    	path = ''.join([path, "('", oid, "')"])
-    endpoint = ''.join([ams_rest_endpoint, path])
-    return do_get(endpoint, path, access_token)
+    return helper_list(access_token, oid, path)
 
-# list_asset_accesspolicy(access_token)
-# list a asset access policy
+# list_asset_accesspolicy(access_token, oid)
+# list a asset access policy(ies)
 def list_asset_accesspolicy(access_token, oid):
     path = '/AccessPolicies'
-    if (oid != ""):
-    	path = ''.join([path, "('", oid, "')"])
-    endpoint = ''.join([ams_rest_endpoint, path])
-    return do_get(endpoint, path, access_token)
+    return helper_list(access_token, oid, path)
 
-# list_sas_locator(access_token)
-# list a sas locator
+# list_sas_locator(access_token, oid)
+# list a sas locator(s)
 def list_sas_locator(access_token, oid):
     path = '/Locators'
-    if (oid != ""):
-    	path = ''.join([path, "('", oid, "')"])
-    endpoint = ''.join([ams_rest_endpoint, path])
-    return do_get(endpoint, path, access_token)
+    return helper_list(access_token, oid, path)
+
+# delete_asset_accesspolicy(access_token, oid)
+# delete a asset access policy
+def delete_asset_accesspolicy(access_token, oid):
+    path = '/AccessPolicies'
+    return helper_delete(access_token, oid, path)
+
+# delete_sas_locator(access_token, oid)
+# delete a sas locator
+def delete_sas_locator(access_token, oid):
+    path = '/Locators'
+    return helper_delete(access_token, oid, path)
+
+# delete_content_key(access_token, oid)
+# delete a content key
+def delete_content_key(access_token, oid):
+    path = '/ContentKeys'
+    return helper_delete(access_token, oid, path)
 
 # create_media_asset(access_token, name)
 # create a media asset
@@ -110,26 +122,21 @@ def set_asset_accesspolicy(access_token, duration):
     body = '{"Name": "NewUploadPolicy", "DurationInMinutes": "' + duration + '", "Permissions": "2"}'
     return do_post(endpoint, path, body, access_token)
 
-# delete_asset_accesspolicy(access_token, accesspolicy_id)
-# delete a asset access policy
-def delete_asset_accesspolicy(access_token, accesspolicy_id):
-    path = '/AccessPolicies'
-    full_path = ''.join([path, "('", accesspolicy_id, "')"])
-    full_path_encoded = urllib.parse.quote(full_path, safe='')
-    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
-    return do_delete(endpoint, full_path_encoded, access_token)
-
-# delete_sas_locator(access_token, saslocator_id)
-# delete a sas locator
-def delete_sas_locator(access_token, saslocator_id):
-    path = '/Locators'
-    full_path = ''.join([path, "('", saslocator_id, "')"])
-    full_path_encoded = urllib.parse.quote(full_path, safe='')
-    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
-    return do_delete(endpoint, full_path_encoded, access_token)
-
 # upload_block_blob(access_token, endpoint, content, content_length)
 # upload a block blob
 def upload_block_blob(access_token, endpoint, content, content_length):
     return do_sto_put(endpoint, content, content_length, access_token)
+
+### Helpers...
+def helper_list(access_token, oid, path):
+    if(oid != ""):
+    	path = ''.join([path, "('", oid, "')"])
+    endpoint = ''.join([ams_rest_endpoint, path])
+    return do_get(endpoint, path, access_token)
+
+def helper_delete(access_token, oid, path):
+    full_path = ''.join([path, "('", oid, "')"])
+    full_path_encoded = urllib.parse.quote(full_path, safe='')
+    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
+    return do_delete(endpoint, full_path_encoded, access_token)
 
