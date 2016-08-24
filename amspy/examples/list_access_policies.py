@@ -47,16 +47,13 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-### list media processors
-print ("\n001 >>> Listing Media Processors")
-response = amspy.list_media_processor(access_token, "")
+### list an asset access policies
+print ("\n001 >>> Listing a Asset Access Policies")
+response = amspy.list_asset_accesspolicy(access_token, "")
 if (response.status_code == 200):
-	resjson = response.json()
-	print("GET Status: " + str(response.status_code))
-	print("ID - NAME")
-	for mp in resjson['d']['results']:
-		print(str(mp['Id']) + " - " + str(mp['Name']))
-		mediaprocessor_id = str(mp['Id'])
+        resjson = response.json()
+        print("GET Status......................: " + str(response.status_code))
+        for ap in resjson['d']['results']:
+                print("Asset Access Policie Id.........: " + str(ap['Id']))
 else:
-	print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
-
+        print("GET Status: " + str(response.status_code) + " - Asset Access Policy List ERROR." + str(response.content))

@@ -80,7 +80,7 @@ if (response.status_code == 200):
 	print("Media Asset Storage Account Name: " + str(resjson['d']['StorageAccountName']))
 	print("Media Asset Uri.................: " + asset_uri)
 else:
-	print("GET Status......................: " + str(response.status_code) + " - Media Asset: '" + name + "' Listing ERROR." + str(response.content))
+	print("GET Status......................: " + str(response.status_code) + " - Media Asset: '" + asset_id + "' Listing ERROR." + str(response.content))
 
 ### create an assetfile
 print ("\n003 >>> Creating a Media Assetfile (for the video file)")
@@ -119,7 +119,7 @@ if (response.status_code == 201):
 	print("Asset Access Policy Id..........: " + accesspolicy_id)
 	print("Asset Access Policy Duration/min: " + str(resjson['d']['DurationInMinutes']))
 else:
-	print("POST Status: " + str(response.status_code) + " - Asset Access Policy: '" + name + "' Creation ERROR." + str(response.content))
+	print("POST Status: " + str(response.status_code) + " - Asset Access Policy Creation ERROR." + str(response.content))
 
 ### list an asset access policies
 print ("\n006 >>> Listing a Asset Access Policies")
@@ -130,7 +130,7 @@ if (response.status_code == 200):
 	for ap in resjson['d']['results']:
 		print("Asset Access Policie Id.........: " + str(ap['Id']))
 else:
-	print("GET Status: " + str(response.status_code) + " - Asset Access Policy: '" + name + "' List ERROR." + str(response.content))
+	print("GET Status: " + str(response.status_code) + " - Asset Access Policy List ERROR." + str(response.content))
 
 ### create a sas locator
 print ("\n007 >>> Creating a SAS Locator")
@@ -152,7 +152,7 @@ if (response.status_code == 201):
 	print("SAS URL Locator Base URI........: " + saslocator_baseuri)
 	print("SAS URL Locator Content Access Component: " + saslocator_cac)
 else:
-	print("POST Status: " + str(response.status_code) + " - SAS URL Locator: '" + name + "' Creation ERROR." + str(response.content))
+	print("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
 
 ### list the sas locator
 print ("\n008 >>> Listing a SAS Locator")
@@ -161,9 +161,9 @@ if (response.status_code == 200):
 	resjson = response.json()
 	print("GET Status......................: " + str(response.status_code))
 	for sl in resjson['d']['results']:
-		print("SAS Locator Id................: " + str(sl['Id']))
+		print("SAS Locator Id..................: " + str(sl['Id']))
 else:
-	print("GET Status......................: " + str(response.status_code) + " - SAS Locator: '" + name + "' List ERROR." + str(response.content))
+	print("GET Status......................: " + str(response.status_code) + " - SAS Locator List ERROR." + str(response.content))
 
 ### upload the video file
 print ("\n009 >>> Uploading the Video File")
@@ -175,7 +175,7 @@ with open(video_path, mode='rb') as file:
 response = amspy.upload_block_blob(access_token, saslocator_video_url, video_content, video_content_length)
 if (response.status_code == 201):
 	print("POST Status.....................: " + str(response.status_code))
-	print("SAS Complete Upload URL.........: " + saslocator_video_url)
+	#print("SAS Complete Upload URL.........: " + saslocator_video_url)
 	print("Video File Uploaded.............: OK")
 else:
 	print("POST Status.....................: " + str(response.status_code) + " - Video File: '" + video_name + "' Upload ERROR." + str(response.content))
@@ -189,7 +189,7 @@ with open(ism_path, mode='rb') as file:
 response = amspy.upload_block_blob(access_token, saslocator_ism_url, ism_content, ism_content_length)
 if (response.status_code == 201):
 	print("POST Status.....................: " + str(response.status_code))
-	print("SAS Complete Upload URL.........: " + saslocator_ism_url)
+	#print("SAS Complete Upload URL.........: " + saslocator_ism_url)
 	print("Manifest File Uploaded..........: OK")
 else:
 	print("POST Status: " + str(response.status_code) + " - Video File: '" + ism_name + "' Upload ERROR." + str(response.content))

@@ -47,16 +47,16 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-### list media processors
-print ("\n001 >>> Listing Media Processors")
-response = amspy.list_media_processor(access_token, "")
+### list content keys
+print ("\n001 >>> Listing Content Keys")
+response = amspy.list_content_keys(access_token, "")
 if (response.status_code == 200):
 	resjson = response.json()
 	print("GET Status: " + str(response.status_code))
-	print("ID - NAME")
-	for mp in resjson['d']['results']:
-		print(str(mp['Id']) + " - " + str(mp['Name']))
-		mediaprocessor_id = str(mp['Id'])
+	print("ID - CHECKSUM")
+	for ck in resjson['d']['results']:
+		print(str(ck['Id']) + " - " + str(ck['Checksum']))
+		mediaprocessor_id = str(ck['Id'])
 else:
-	print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
+	print("GET Status: " + str(response.status_code) + " - Content Keys Listing ERROR." + str(response.content))
 
