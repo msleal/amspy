@@ -8,7 +8,11 @@ License: MIT (see LICENSE.txt file for details)
 
 import requests
 import json
-from .settings import acceptformat, charset, dsversion, mdsversion, xmsversion
+from .settings import json_acceptformat, xml_acceptformat, batch_acceptformat, charset, dsversion, mdsversion, xmsversion
+
+#Defaults
+content_acceptformat = json_acceptformat
+acceptformat = json_acceptformat
 
 # do_auth(endpoint, body, access_token)
 # do an HTTP POST request for authentication (acquire an access token) and return JSON
@@ -21,7 +25,7 @@ def do_auth(endpoint, body):
 # do_get(endpoint, access_token)
 # do an HTTP GET request and return JSON
 def do_get(endpoint, path, access_token):
-    headers = {"Content-Type": acceptformat,
+    headers = {"Content-Type": content_acceptformat,
 		"DataServiceVersion": dsversion,
 		"MaxDataServiceVersion": mdsversion,
 		"Accept": acceptformat,
@@ -40,7 +44,7 @@ def do_get(endpoint, path, access_token):
 # do_put(endpoint, body, access_token)
 # do an HTTP PUT request and return JSON
 def do_put(endpoint, body, access_token):
-    headers = {"content-type": acceptformat,
+    headers = {"content-type": content_acceptformat,
 		"Accept": acceptformat,
 		"DataServiceVersion": dsversion,
 		"MaxDataServiceVersion": mdsversion,
@@ -52,8 +56,12 @@ def do_put(endpoint, body, access_token):
 
 # do_post(endpoint, body, access_token)
 # do an HTTP POST request and return JSON
-def do_post(endpoint, path, body, access_token):
-    headers = {"Content-Type": acceptformat, 
+def do_post(endpoint, path, body, access_token, format="json"):
+    global acceptformat, content_acceptformat
+    if (format == "xml"):
+    	content_acceptformat = xml_acceptformat
+    	acceptformat = xml_acceptformat + ",application/xml" 
+    headers = {"Content-Type": content_acceptformat, 
 		"DataServiceVersion": dsversion,
 		"MaxDataServiceVersion": mdsversion,
 		"Accept": acceptformat,
@@ -71,7 +79,7 @@ def do_post(endpoint, path, body, access_token):
 # do_patch(endpoint, path, body, access_token)
 # do an HTTP PATCH request and return JSON
 def do_patch(endpoint, path, body, access_token):
-    headers = {"Content-Type": acceptformat, 
+    headers = {"Content-Type": content_acceptformat, 
 		"DataServiceVersion": dsversion,
 		"MaxDataServiceVersion": mdsversion,
 		"Accept": acceptformat,

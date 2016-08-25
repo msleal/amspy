@@ -47,16 +47,18 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-### list media processors
-print ("\n001 >>> Listing Media Processors")
-response = amspy.list_media_processor(access_token)
-if (response.status_code == 200):
+#Some global vars...
+name = "testasset"
+
+### create an asset
+print ("\n001 >>> Creating a Media Asset")
+response = amspy.create_media_asset(access_token, name)
+if (response.status_code == 201):
 	resjson = response.json()
-	print("GET Status: " + str(response.status_code))
-	print("ID - NAME")
-	for mp in resjson['d']['results']:
-		print(str(mp['Id']) + " - " + str(mp['Name']))
-		mediaprocessor_id = str(mp['Id'])
+	asset_id = str(resjson['d']['Id']);
+	print("POST Status.............................: " + str(response.status_code))
+	print("Media Asset Name........................: " + name)
+	print("Media Asset Id..........................: " + asset_id)
 else:
-	print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
+	print("POST Status.............................: " + str(response.status_code) + " - Media Asset: '" + name + "' Creation ERROR." + str(response.content))
 

@@ -49,7 +49,7 @@ print ("-------------------------------------------------------\n");
 
 ### list content keys
 print ("\n001 >>> Listing Content Keys")
-response = amspy.list_content_keys(access_token, "")
+response = amspy.list_content_key(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
 	print("GET Status: " + str(response.status_code))

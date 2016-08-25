@@ -49,7 +49,7 @@ print ("-------------------------------------------------------\n");
 
 ### list an asset access policies
 print ("\n001 >>> Listing a Asset Access Policies")
-response = amspy.list_asset_accesspolicy(access_token, "")
+response = amspy.list_asset_accesspolicy(access_token)
 if (response.status_code == 200):
         resjson = response.json()
         print("GET Status......................: " + str(response.status_code))
