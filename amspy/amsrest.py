@@ -8,7 +8,7 @@ License: MIT (see LICENSE.txt file for details)
 
 import urllib
 import requests
-from .restfns import do_auth, do_get, do_post, do_put, do_delete, do_patch, do_sto_put
+from .restfns import do_auth, do_get, do_post, do_put, do_delete, do_patch, do_sto_put, do_get_url
 from .settings import ams_rest_endpoint, ams_auth_endpoint
 
 # get_access_token(accountname, accountkey)
@@ -17,6 +17,13 @@ def get_access_token(accountname, accountkey):
     accountkey_encoded = urllib.parse.quote(accountkey, safe='')
     body = "grant_type=client_credentials&client_id=" + accountname + "&client_secret=" + accountkey_encoded + " &scope=urn%3aWindowsAzureMediaServices"
     return do_auth(ams_auth_endpoint, body)
+
+# get_redirected_url(access_token)
+# get ams redirected url
+def get_redirected_url(access_token):
+    path = '/Assets'
+    endpoint = ''.join([ams_rest_endpoint, path])
+    return do_get_url(endpoint, access_token)
 
 # list_media_asset(access_token, oid)
 # list a media asset(s)
@@ -78,20 +85,23 @@ def delete_media_asset(access_token, oid):
     path = '/Assets'
     return helper_delete(access_token, oid, path)
 
-# create_media_asset(access_token, name)
+# create_media_asset(access_token, name, options="0")
 # create a media asset
-def create_media_asset(access_token, name):
+def create_media_asset(access_token, name, options=0):
     path = '/Assets'
     endpoint = ''.join([ams_rest_endpoint, path])
-    body = '{"Name": "' + name + '"}'
+    body = '{"Name": "' + name + '", "Options": "' + options + '"}'
     return do_post(endpoint, path, body, access_token)
 
-# create_media_assetfile(access_token, parent_asset_id, name, is_encrypted, is_primary)
+# create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", is_encrypted="false", encryption_scheme="None", encryptionkey_id="None")
 # create a media assetfile
-def create_media_assetfile(access_token, parent_asset_id, name, is_encrypted, is_primary):
+def create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", is_encrypted="false", encryption_scheme="None", encryptionkey_id="None"):
     path = '/Files'
     endpoint = ''.join([ams_rest_endpoint, path])
-    body = '{"IsEncrypted": "' + is_encrypted + '", "IsPrimary": "' + is_primary + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
+    if (encryption_scheme == "StorageEncryption"):
+    	body = '{"IsEncrypted": "' + is_encrypted + '", "EncryptionScheme": "' + encryption_scheme + '", "EncryptionVersion": "' + "1.0" + '", "EncryptionKeyId": "' + encryptionkey_id + '", "IsPrimary": "' + is_primary + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
+    else:
+    	body = '{"IsPrimary": "' + is_primary + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
     return do_post(endpoint, path, body, access_token)
 
 # create_sas_locator(access_token, asset_id, accesspolicy_id)
@@ -120,6 +130,18 @@ def create_media_job(access_token, processor_id, asset_id, content):
 
     body = content
     return do_post(endpoint, path, body, access_token)
+
+# link_content_key(access_token, asset_id, encryptionkey_id)
+# link a content key with an asset
+def link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint):
+    path = '/Assets'
+    full_path = ''.join([path, "('", asset_id, "')", "/$links/ContentKeys"])
+    full_path_encoded = urllib.parse.quote(full_path, safe='')
+    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
+    uri = ''.join([ams_redirected_rest_endpoint, 'ContentKeys', "('", encryptionkey_id, "')"])
+
+    body = '{"uri": "' + uri + '"}'
+    return do_post(endpoint, full_path_encoded, body, access_token)
 
 # update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name)
 # update a media assetfile
@@ -155,6 +177,17 @@ def helper_delete(access_token, oid, path):
 
 ### Aux Funcions...
 # These are functions that are intended for "external" use, but are not AMS REST API's...
+# Translate the numeric options/encryption of the Asset
+def translate_asset_options(nr):
+    if (nr == "0"): 
+    	return "None"
+    if (nr == "1"): 
+    	return "StorageEncrypted"
+    if (nr == "2"): 
+    	return "CommonEncryptionProtected"
+    if (nr == "4"): 
+    	return "EnvelopeEncryptionProtected"
+
 # Translate the numeric state of the Jobs
 def translate_job_state(nr):
     if (nr == "0"): 

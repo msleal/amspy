@@ -22,7 +22,7 @@ def do_auth(endpoint, body):
                 "Accept": acceptformat}
     return requests.post(endpoint, data=body, headers=headers)
 
-# do_get(endpoint, access_token)
+# do_get(endpoint, path, access_token)
 # do an HTTP GET request and return JSON
 def do_get(endpoint, path, access_token):
     headers = {"Content-Type": content_acceptformat,
@@ -122,3 +122,17 @@ def do_sto_put(endpoint, body, content_length, access_token):
 		"x-ms-version" : "2015-02-21",
 		"Content-Length" : str(content_length)}
     return requests.put(endpoint, data=body, headers=headers)
+
+# do_get_url(endpoint, path, access_token)
+# do an HTTP GET request and return JSON
+def do_get_url(endpoint, access_token):
+    headers = {"Content-Type": content_acceptformat,
+		"DataServiceVersion": dsversion,
+		"MaxDataServiceVersion": mdsversion,
+		"Accept": acceptformat,
+		"Accept-Charset" : charset,
+		"Authorization": "Bearer " + access_token,
+		"x-ms-version" : xmsversion}
+    body = ''
+    response = requests.get(endpoint, headers=headers, allow_redirects=True)
+    return response

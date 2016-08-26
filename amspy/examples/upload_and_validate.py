@@ -49,11 +49,21 @@ access_token = resjson["access_token"]
 
 #Some global vars...
 NAME = "movie"
+ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, EnvelopeEncryptionProtected=4
+ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 VIDEO_NAME = "movie.mp4"
 ISM_NAME = "movie.ism"
 VIDEO_PATH = "/home/architect/Movie/Start-2009/movie.mp4"
 ISM_PATH = "/home/architect/Movie/Start-2009/movie.ism"
 PROCESSOR_NAME = "Windows Azure Media Packager"
+
+### get ams redirected url
+response = amspy.get_redirected_url(access_token)
+if (response.status_code == 200):
+        ams_redirected_rest_endpoint = str(response.url)
+else:
+        print("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
+        exit(1);
 
 ### PRE-REQ We need to have a Content key to use for AES Encription
 # Hee you can download a sample to create it for you:
@@ -64,9 +74,11 @@ if (response.status_code == 200):
 	resjson = response.json()
 	count = len(resjson['d']['results']);
 	if (count > 0):
+		encryptionkey_id = str(resjson['d']['results'][0]['Id'])
 		protectionkey_id = str(resjson['d']['results'][0]['ProtectionKeyId'])
 		print("GET Status..............................: " + str(response.status_code))
-		print("AES Protection Key Id...................: " + protectionkey_id)
+		print("AES Content Key Id......................: " + encryptionkey_id)
+		print("AES Content Protection Key Id...........: " + protectionkey_id)
 		print("AES Content Key Checksum................: " + str(resjson['d']['results'][0]['Checksum']))
 	else:
 		print("ERROR: AES Content Key Not Found. ")
@@ -80,7 +92,7 @@ else:
 
 ### create an asset
 print ("\n001 >>> Creating a Media Asset")
-response = amspy.create_media_asset(access_token, NAME)
+response = amspy.create_media_asset(access_token, NAME, ENCRYPTION)
 if (response.status_code == 201):
 	resjson = response.json()
 	asset_id = str(resjson['d']['Id']);
@@ -98,14 +110,24 @@ if (response.status_code == 200):
 	asset_uri = str(resjson['d']['Uri'])
 	print("GET Status..............................: " + str(response.status_code))
 	print("Media Asset Name........................: " + str(resjson['d']['Name']))
+	print("Media Asset Encryption..................: " + str(amspy.translate_asset_options(resjson['d']['Options'])))
 	print("Media Asset Storage Account Name........: " + str(resjson['d']['StorageAccountName']))
 	print("Media Asset Uri.........................: " + asset_uri)
 else:
 	print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + asset_id + "' Listing ERROR." + str(response.content))
 
+### link a content key
+print ("\n003 >>> Linking a Content Key to the Asset")
+response = amspy.link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint)
+if (response.status_code == 204):
+	print("GET Status..............................: " + str(response.status_code))
+	print("Media Content Key Linked................: OK")
+else:
+	print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + asset_id + "' Content Key Linking ERROR." + str(response.content))
+
 ### create an assetfile
-print ("\n003 >>> Creating a Media Assetfile (for the video file)")
-response = amspy.create_media_assetfile(access_token, asset_id, VIDEO_NAME, "false", "false")
+print ("\n004 >>> Creating a Media Assetfile (for the video file)")
+response = amspy.create_media_assetfile(access_token, asset_id, VIDEO_NAME, "false", "true", ENCRYPTION_SCHEME, encryptionkey_id)
 if (response.status_code == 201):
 	resjson = response.json()
 	video_assetfile_id = str(resjson['d']['Id']);
@@ -117,8 +139,8 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + VIDEO_NAME + "' Creation ERROR." + str(response.content))
 
 ### create an assetfile
-print ("\n004 >>> Creating a Media Assetfile (for the manifest file)")
-response = amspy.create_media_assetfile(access_token, asset_id, ISM_NAME, "false", "true")
+print ("\n005 >>> Creating a Media Assetfile (for the manifest file)")
+response = amspy.create_media_assetfile(access_token, asset_id, ISM_NAME, "true", "true", ENCRYPTION_SCHEME, encryptionkey_id)
 if (response.status_code == 201):
 	resjson = response.json()
 	ism_assetfile_id = str(resjson['d']['Id']);
@@ -130,7 +152,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + ISM_NAME + "' Creation ERROR." + str(response.content))
 
 ### set an asset access policy
-print ("\n005 >>> Setting an Asset Access Policy")
+print ("\n006 >>> Setting an Asset Access Policy")
 duration = "440"
 response = amspy.set_asset_accesspolicy(access_token, duration)
 if (response.status_code == 201):
@@ -143,7 +165,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Asset Access Policy Creation ERROR." + str(response.content))
 
 ### list an asset access policies
-print ("\n006 >>> Listing a Asset Access Policies")
+print ("\n007 >>> Listing a Asset Access Policies")
 response = amspy.list_asset_accesspolicy(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
@@ -154,7 +176,7 @@ else:
 	print("GET Status: " + str(response.status_code) + " - Asset Access Policy List ERROR." + str(response.content))
 
 ### create a sas locator
-print ("\n007 >>> Creating a SAS Locator")
+print ("\n008 >>> Creating a SAS Locator")
 ## INFO: If you need to upload your files immediately, you should set your StartTime value to five minutes before the current time.
 #This is because there may be clock skew between your client machine and Media Services.
 #Also, your StartTime value must be in the following DateTime format: YYYY-MM-DDTHH:mm:ssZ (for example, "2014-05-23T17:53:50Z").
@@ -176,7 +198,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
 
 ### list the sas locator
-print ("\n008 >>> Listing a SAS Locator")
+print ("\n009 >>> Listing a SAS Locator")
 response = amspy.list_sas_locator(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
@@ -187,7 +209,7 @@ else:
 	print("GET Status..............................: " + str(response.status_code) + " - SAS Locator List ERROR." + str(response.content))
 
 ### upload the video file
-print ("\n009 >>> Uploading the Video File")
+print ("\n010 >>> Uploading the Video File")
 #datetime = datetime.datetime.now(pytz.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
 saslocator_video_url = ''.join([saslocator_baseuri, '/', VIDEO_NAME, saslocator_cac])
 with open(VIDEO_PATH, mode='rb') as file:
@@ -202,7 +224,7 @@ else:
 	print("POST Status.............................: " + str(response.status_code) + " - Video File: '" + VIDEO_NAME + "' Upload ERROR." + str(response.content))
 
 ### upload the manifest file
-print ("\n010 >>> Uploading the Manifest File")
+print ("\n011 >>> Uploading the Manifest File")
 saslocator_ism_url = ''.join([saslocator_baseuri, '/', ISM_NAME, saslocator_cac])
 with open(ISM_PATH, mode='rb') as file:
 	ism_content = file.read()
@@ -216,7 +238,7 @@ else:
 	print("POST Status: " + str(response.status_code) + " - Video File: '" + ISM_NAME + "' Upload ERROR." + str(response.content))
 
 ### update the assetfile
-print ("\n011 >>> Updating the Video Assetfile")
+print ("\n012 >>> Updating the Video Assetfile")
 response = amspy.update_media_assetfile(access_token, asset_id, video_assetfile_id, video_content_length, VIDEO_NAME)
 if (response.status_code == 204):
 	print("MERGE Status............................: " + str(response.status_code))
@@ -225,7 +247,7 @@ else:
 	print("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + VIDEO_NAME + "' Update ERROR." + str(response.content))
 
 ### update the assetfile
-print ("\n012 >>> Updating the Manifest Assetfile")
+print ("\n013 >>> Updating the Manifest Assetfile")
 response = amspy.update_media_assetfile(access_token, asset_id, ism_assetfile_id, ism_content_length, ISM_NAME)
 if (response.status_code == 204):
 	print("MERGE Status............................: " + str(response.status_code))
@@ -234,7 +256,7 @@ else:
 	print("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + ISM_NAME + "' Update ERROR." + str(response.content))
 
 ### delete the locator
-print ("\n013 >>> Deleting the Locator")
+print ("\n014 >>> Deleting the Locator")
 response = amspy.delete_sas_locator(access_token, saslocator_id)
 if (response.status_code == 204):
 	print("DELETE Status...........................: " + str(response.status_code))
@@ -243,7 +265,7 @@ else:
 	print("DELETE Status...........................: " + str(response.status_code) + " - SAS URL Locator: '" + saslocator_id + "' Delete ERROR." + str(response.content))
 
 ### delete the asset access policy
-print ("\n014 >>> Deleting the Acess Policy")
+print ("\n015 >>> Deleting the Acess Policy")
 response = amspy.delete_asset_accesspolicy(access_token, accesspolicy_id)
 if (response.status_code == 204):
 	print("DELETE Status...........................: " + str(response.status_code))
@@ -252,7 +274,7 @@ else:
 	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + accesspolicy_id + "' Delete ERROR." + str(response.content))
 
 ### get the media processor
-print ("\n015 >>> Getting the Media Processor")
+print ("\n016 >>> Getting the Media Processor")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -266,7 +288,7 @@ else:
         print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
 ## create a media validation job
-print ("\n016 >>> Creating a Specific Media Job to validate the mp4")
+print ("\n017 >>> Creating a Specific Media Job to validate the mp4")
 response = amspy.validate_mp4_asset(access_token, processor_id, asset_id, "mp4validated")
 if (response.status_code == 201):
 	resjson = response.json()
@@ -277,7 +299,7 @@ else:
 	print("POST Status.............................: " + str(response.status_code) + " - Media Job Creation ERROR." + str(response.content))
 
 ### list a media job
-print ("\n017 >>> Listing a Media Job")
+print ("\n018 >>> Listing a Media Job")
 flag = 1
 while (flag):
 	response = amspy.list_media_job(access_token, job_id)
@@ -294,7 +316,7 @@ while (flag):
 
 ### delete an asset
 if (amspy.translate_job_state(job_state) == 'Finished'):
-	print ("\n018 >>> Deleting the Original Asset")
+	print ("\n019 >>> Deleting the Original Asset")
 	response = amspy.delete_media_asset(access_token, asset_id)
 	if (response.status_code == 204):
 		print("DELETE Status...........................: " + str(response.status_code))

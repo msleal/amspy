@@ -13,8 +13,8 @@ delete_asset_accesspolicy(access_token, oid) - delete an asset acess policy
 delete_sas_locator(access_token, oid) - delete a sas locator
 delete_content_key(access_token, oid) - delete an asset acess policy
 delete_media_asset(access_token, oid) - delete an asset
-create_media_asset(access_token, name) - create a media asset
-create_media_assetfile(access_token, parent_asset_id, name, is_encrypted, is_primary) - create a media assetfile
+create_media_asset(access_token, name, options=0) - create a media asset
+create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", is_encrypted="false", encryption_scheme="None", encryptionkey_id="None") - create a media assetfile
 create_sas_locator(access_token, asset_id, accesspolicy_id) - create a sas url locator
 create_media_task(access_token, name, processor_id, asset_id, content) - create a media task
 create_media_job(access_token, name, job_definition, processor_id, asset_id, task_body) -create a job

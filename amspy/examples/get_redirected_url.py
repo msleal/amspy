@@ -47,15 +47,10 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-### list content keys
-print ("\n001 >>> Listing Content Keys")
-response = amspy.list_content_key(access_token)
+### get ams redirected url
+response = amspy.get_redirected_url(access_token)
 if (response.status_code == 200):
-	resjson = response.json()
-	print("GET Status: " + str(response.status_code))
-	print("ID - CHECKSUM")
-	for ck in resjson['d']['results']:
-		print(str(ck['Id']) + " - " + str(ck['Checksum']))
+	print("New Redirected URL: " + str(response.url))
 else:
-	print("GET Status: " + str(response.status_code) + " - Content Keys Listing ERROR." + str(response.content))
+	print("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
 
