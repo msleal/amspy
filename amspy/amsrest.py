@@ -87,10 +87,10 @@ def delete_media_asset(access_token, oid):
 
 # create_media_asset(access_token, name, options="0")
 # create a media asset
-def create_media_asset(access_token, name, options=0):
+def create_media_asset(access_token, name, options="0"):
     path = '/Assets'
     endpoint = ''.join([ams_rest_endpoint, path])
-    body = '{"Name": "' + name + '", "Options": "' + options + '"}'
+    body = '{"Name": "' + name + '", "Options": "' + str(options) + '"}'
     return do_post(endpoint, path, body, access_token)
 
 # create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", is_encrypted="false", encryption_scheme="None", encryptionkey_id="None")
