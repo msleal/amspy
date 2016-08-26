@@ -3,11 +3,12 @@ The amspy is a library to provide a simple Azure Media Services REST interface f
 
 ```
 get_access_token(accountname, accountkey) - get the access token/authenticate
-list_media_asset(access_token, oid) - list media asset
-list_content_key(access_token, oid) - list sas locator
-list_media_processor(access_token, oid) - list media processor
-list_asset_accesspolicy(access_token, oid) - list asset acess policy
-list_sas_locator(access_token, oid) - list sas locator
+list_media_asset(access_token, oid="") - list media asset(s)
+list_content_key(access_token, oid="") - list content key(s)
+list_media_processor(access_token, oid="") - list media processor(s)
+list_asset_accesspolicy(access_token, oid="") - list asset acess policy
+list_sas_locator(access_token, oid="") - list sas locator(s)
+list_media_job(access_token, oid="") - list media job(s)
 delete_asset_accesspolicy(access_token, oid) - delete an asset acess policy
 delete_sas_locator(access_token, oid) - delete a sas locator
 delete_content_key(access_token, oid) - delete an asset acess policy
