@@ -15,7 +15,8 @@ from .settings import ams_rest_endpoint, ams_auth_endpoint
 # get access token with ams
 def get_access_token(accountname, accountkey):
     accountkey_encoded = urllib.parse.quote(accountkey, safe='')
-    body = "grant_type=client_credentials&client_id=" + accountname + "&client_secret=" + accountkey_encoded + " &scope=urn%3aWindowsAzureMediaServices"
+    body = "grant_type=client_credentials&client_id=" + accountname + \
+	"&client_secret=" + accountkey_encoded + " &scope=urn%3aWindowsAzureMediaServices"
     return do_auth(ams_auth_endpoint, body)
 
 # get_url(access_token)
@@ -97,9 +98,23 @@ def create_media_assetfile(access_token, parent_asset_id, name, is_primary="fals
     path = '/Files'
     endpoint = ''.join([ams_rest_endpoint, path])
     if (encryption_scheme == "StorageEncryption"):
-    	body = '{"IsEncrypted": "' + is_encrypted + '", "EncryptionScheme": "' + encryption_scheme + '", "EncryptionVersion": "' + "1.0" + '", "EncryptionKeyId": "' + encryptionkey_id + '", "IsPrimary": "' + is_primary + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
+    	body = '{ \
+			"IsEncrypted": "' + is_encrypted + '", \
+			"EncryptionScheme": "' + encryption_scheme + '", \
+			"EncryptionVersion": "' + "1.0" + '", \
+			"EncryptionKeyId": "' + encryptionkey_id + '", \
+			"IsPrimary": "' + is_primary + '", \
+			"MimeType": "video/mp4", \
+			"Name": "' + name + '", \
+			"ParentAssetId": "' + parent_asset_id + '" \
+		}'
     else:
-    	body = '{"IsPrimary": "' + is_primary + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
+    	body = '{ \
+			"IsPrimary": "' + is_primary + '", \
+			"MimeType": "video/mp4", \
+			"Name": "' + name + '", \
+			"ParentAssetId": "' + parent_asset_id + '" \
+		}'
     return do_post(endpoint, path, body, access_token)
 
 # create_sas_locator(access_token, asset_id, accesspolicy_id)
@@ -108,7 +123,11 @@ def create_sas_locator(access_token, asset_id, accesspolicy_id):
     path = '/Locators'
     endpoint = ''.join([ams_rest_endpoint, path])
     #body = '{"AccessPolicyId":"' + accesspolicy_id + '", "AssetId":"' + asset_id + '", "StartTime":"' + starttime + '", "Type":1 }'
-    body = '{"AccessPolicyId":"' + accesspolicy_id + '", "AssetId":"' + asset_id + '", "Type":1 }'
+    body = '{ \
+		"AccessPolicyId":"' + accesspolicy_id + '", \
+		"AssetId":"' + asset_id + '", \
+		"Type":1 \
+	}'
     return do_post(endpoint, path, body, access_token)
 
 # create_media_task(access_token, processor_id, asset_id, content)
@@ -129,6 +148,33 @@ def create_media_job(access_token, processor_id, asset_id, content):
     body = content
     return do_post(endpoint, path, body, access_token)
 
+# create_contentkey_authorization_policy(access_token, processor_id, asset_id, content)
+# create content key authorization policy
+def create_contentkey_authorization_policy(access_token, content):
+    path = '/ContentKeyAuthorizationPolicies'
+    endpoint = ''.join([ams_rest_endpoint, path])
+
+    body = content
+    return do_post(endpoint, path, body, access_token)
+
+# create_contentkey_authorization_policy_options(access_token, processor_id, asset_id, content)
+# create content key authorization policy options
+def create_contentkey_authorization_policy_options(access_token, key_delivery_type="2", name="HLS Open Authorization Policy", key_restriction_type="0"):
+    path = '/ContentKeyAuthorizationPolicyOptions'
+    endpoint = ''.join([ams_rest_endpoint, path])
+
+    body = '{ \
+		"Name":"policy",\
+		"KeyDeliveryType":2, \
+		"KeyDeliveryConfiguration":"", \
+			"Restrictions":[{ \
+			"Name":"' + name + '", \
+			"KeyRestrictionType":0, \
+			"Requirements":null \
+		}] \
+	}'
+    return do_post(endpoint, path, body, access_token, "json_only")
+
 # link_content_key(access_token, asset_id, encryptionkey_id)
 # link a content key with an asset
 def link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint):
@@ -141,6 +187,25 @@ def link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_re
     body = '{"uri": "' + uri + '"}'
     return do_post(endpoint, full_path_encoded, body, access_token)
 
+# link_contentkey_authorization_policy(access_token, ckap_id, options_id, encryptionkey_id)
+# link content key aurhorization policy with options
+def link_contentkey_authorization_policy(access_token, ckap_id, options_id, ams_redirected_rest_endpoint):
+    path = '/ContentKeyAuthorizationPolicies'
+    full_path = ''.join([path, "('", ckap_id, "')", "/$links/Options"])
+    full_path_encoded = urllib.parse.quote(full_path, safe='')
+    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
+    uri = ''.join([ams_redirected_rest_endpoint, 'ContentKeyAuthorizationPolicyOptions', "('", options_id, "')"])
+
+    body = '{"uri": "' + uri + '"}'
+    return do_post(endpoint, full_path_encoded, body, access_token, "json_only", "1.0;NetFx")
+
+# add_authorization_policy(access_token, oid)
+# add a authorization policy
+def add_authorization_policy(access_token, oid):
+    path = '/ContentKeys'
+    body = '{"AuthorizationPolicyId":"' + oid + '"}'
+    return helper_add(access_token, oid, path, body)
+
 # update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name)
 # update a media assetfile
 def update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name):
@@ -148,7 +213,13 @@ def update_media_assetfile(access_token, parent_asset_id, asset_id, content_leng
     full_path = ''.join([path, "('", asset_id, "')"])
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
-    body = '{"ContentFileSize": "' + str(content_length) + '", "Id": "' + asset_id + '", "MimeType": "video/mp4", "Name": "' + name + '", "ParentAssetId": "' + parent_asset_id + '"}'
+    body = '{ \
+		"ContentFileSize": "' + str(content_length) + '", \
+		"Id": "' + asset_id + '", \
+		"MimeType": "video/mp4", \
+		"Name": "' + name + '", \
+		"ParentAssetId": "' + parent_asset_id + '" \
+	}'
     return do_patch(endpoint, full_path_encoded, body, access_token)
 
 # set_asset_accesspolicy(access_token, duration)
@@ -156,11 +227,21 @@ def update_media_assetfile(access_token, parent_asset_id, asset_id, content_leng
 def set_asset_accesspolicy(access_token, duration):
     path = '/AccessPolicies'
     endpoint = ''.join([ams_rest_endpoint, path])
-    body = '{"Name": "NewUploadPolicy", "DurationInMinutes": "' + duration + '", "Permissions": "2"}'
+    body = '{ \
+		"Name": "NewUploadPolicy", \
+		"DurationInMinutes": "' + duration + '", \
+		"Permissions": "2" \
+	}'
     return do_post(endpoint, path, body, access_token)
 
 ### Helpers...
 # Generic functions not intended for "external" use... 
+def helper_add(access_token, oid, path, body):
+    full_path = ''.join([path, "('", oid, "')"])
+    full_path_encoded = urllib.parse.quote(full_path, safe='')
+    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
+    return do_put(endpoint, full_path_encoded, body, access_token, "json_only", "1.0;NetFx")
+
 def helper_list(access_token, oid, path):
     if(oid != ""):
     	path = ''.join([path, "('", oid, "')"])

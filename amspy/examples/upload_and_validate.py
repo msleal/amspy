@@ -56,6 +56,7 @@ ISM_NAME = "movie.ism"
 VIDEO_PATH = "assets/movie.mp4"
 ISM_PATH = "assets/movie.ism"
 PROCESSOR_NAME = "Windows Azure Media Packager"
+AUTH_POLICY = '{"Name":"Open Authorization Policy"}'
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
@@ -279,7 +280,7 @@ else:
         print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
 ## create a media validation job
-print ("\n016 >>> Creating a Specific Media Job to validate the mp4")
+print ("\n016 >>> Creating a Media Job to validate the mp4")
 response = amspy.validate_mp4_asset(access_token, processor_id, asset_id, "mp4validated")
 if (response.status_code == 201):
 	resjson = response.json()
@@ -290,7 +291,7 @@ else:
 	print("POST Status.............................: " + str(response.status_code) + " - Media Job Creation ERROR." + str(response.content))
 
 ### list a media job
-print ("\n017 >>> Listing a Media Job")
+print ("\n017 >>> Getting the Media Job Status")
 flag = 1
 while (flag):
 	response = amspy.list_media_job(access_token, job_id)
@@ -318,7 +319,7 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		print("DELETE Status...........................: " + str(response.status_code) + " - Asset: '" + asset_id + "' Delete ERROR." + str(response.content))
 
 	## getting the encoded asset id
-	print ("\n019 >>> Getting Encoded Media Asset Id")
+	print ("\n019 >>> Getting the Encoded Media Asset Id")
 	response = amspy.get_url(access_token, joboutputassets_uri, False)
 	if (response.status_code == 200):
 		resjson = response.json()
@@ -334,6 +335,46 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 	if (response.status_code == 204):
 		print("GET Status..............................: " + str(response.status_code))
 		print("Media Content Key Linked................: OK")
-		print ("\n We got here? Cool!")
 	else:
 		print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + encoded_asset_id + "' Content Key Linking ERROR." + str(response.content))
+
+	### configure content key authorization policy
+	print ("\n021 >>> Creating a Content Key Authorization Policy")
+	response = amspy.create_contentkey_authorization_policy(access_token, AUTH_POLICY)
+	if (response.status_code == 201):
+		resjson = response.json()
+		authorization_policy_id = str(resjson['d']['Id']);
+		print("POST Status.............................: " + str(response.status_code))
+		print("CK Authorization Policy Id..............: " + authorization_policy_id)
+	else:
+		print("POST Status.............................: " + str(response.status_code) + " - Content Key Authorization Policy Creation ERROR." + str(response.content))
+
+	### configure asset delivery policy
+	print ("\n022 >>> Creating the Content Key Authorization Policy Options")
+	response = amspy.create_contentkey_authorization_policy_options(access_token)
+	if (response.status_code == 201):
+		resjson = response.json()
+		authorization_policy_options_id = str(resjson['d']['Id']);
+		print("POST Status.............................: " + str(response.status_code))
+		print("CK Authorization Policy Options Id......: " + authorization_policy_options_id)
+	else:
+		print("POST Status.............................: " + str(response.status_code) + " - Content Key Authorization Policy Options Creation ERROR." + str(response.content))
+
+	### link a contentkey authorization policies with options
+	print ("\n023 >>> Linking the Content Key Authorization Policy with Options")
+	response = amspy.link_contentkey_authorization_policy(access_token, authorization_policy_id, authorization_policy_options_id, ams_redirected_rest_endpoint)
+	if (response.status_code == 204):
+		print("GET Status..............................: " + str(response.status_code))
+		print("CK Authorization Policy Linked..........: OK")
+	else:
+		print("GET Status..............................: " + str(response.status_code) + " - Content Key Authorization Policy '" + authorization_policy_id + "' Linking ERROR." + str(response.content))
+
+	### link a contentkey authorization policies with options
+	print ("\n024 >>> Add Authorization to the Content Key")
+	response = amspy.add_authorization_policy(access_token, authorization_policy_id)
+	if (response.status_code == 204):
+		print("GET Status..............................: " + str(response.status_code))
+		print("Authorization Policy Added..............: OK")
+		print ("\n We got here? Cool!")
+	else:
+		print("GET Status..............................: " + str(response.status_code) + " - Authorization Policy: '" + authorization_policy_id + "' Adding ERROR." + str(response.content))

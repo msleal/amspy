@@ -1,7 +1,7 @@
 ### Upload and Valiate a MP4 Video
 This example does the complete workflow from upload an already encode MP4 file,
 and validate it with the Azure Media Packager. This example also link a Content key
-with the Asset, so we can use AES dynamic encryption to deliver the content (e.g.: HLS).
+with the Encoded Asset, so we can use AES dynamic encryption to deliver the content (e.g.: HLS).
 ```
 response = amspy.get_redirected_url(access_token)
 response = amspy.list_content_key(access_token)

@@ -1,4 +1,4 @@
-[source: https://azure.microsoft.com/en-us/documentation/articles/media-services-protect-with-aes128/ ]
+[ source: https://azure.microsoft.com/en-us/documentation/articles/media-services-protect-with-aes128/ ]
 
 AES-128 Dynamic Encryption and Key Delivery Service Workflow
 

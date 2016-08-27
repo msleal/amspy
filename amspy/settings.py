@@ -11,6 +11,7 @@ ams_auth_endpoint = 'https://wamsprodglobal001acs.accesscontrol.windows.net/v2/O
 ams_rest_endpoint = 'https://media.windows.net/API'
 
 #Headers...
+json_only_acceptformat = "application/json"
 json_acceptformat = "application/json;odata=verbose"
 xml_acceptformat = "application/atom+xml"
 batch_acceptformat = "multipart/mixed" 
