@@ -3,6 +3,7 @@ The amspy is a library to provide a simple Azure Media Services REST interface f
 
 ```
 get_access_token(accountname, accountkey) - get the access token/authenticate
+get_url(access_token) - get a specific url
 list_media_asset(access_token, oid="") - list media asset(s)
 list_content_key(access_token, oid="") - list content key(s)
 list_media_processor(access_token, oid="") - list media processor(s)
@@ -18,6 +19,7 @@ create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", 
 create_sas_locator(access_token, asset_id, accesspolicy_id) - create a sas url locator
 create_media_task(access_token, name, processor_id, asset_id, content) - create a media task
 create_media_job(access_token, name, job_definition, processor_id, asset_id, task_body) -create a job
+link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint) - link a content key with a media asset
 update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name) - update assetfile content length
 set_asset_accesspolicy(access_token, duration) - set the asset access policy
 upload_block_blob(access_token, endpoint, content, content_length) - upload a file as a block blob

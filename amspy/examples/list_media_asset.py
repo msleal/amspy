@@ -7,7 +7,6 @@ import os
 import json
 import amspy
 import time
-#import pytz
 import logging
 import datetime
 
@@ -29,6 +28,11 @@ purge_log = configData['purgeLog']
 time_zone = configData['timeZone']
 region = configData['region']
 
+#Initialization...
+print ("\n-----------------------= AMS Py =----------------------");
+print ("Simple Python Library for Azure Media Services REST API");
+print ("-------------------------------------------------------\n");
+
 #Remove old log file if requested (default behavior)...
 if (purge_log.lower() == "yes"):
         if (os.path.isfile(log_name)):
@@ -42,15 +46,15 @@ response = amspy.get_access_token(account_name, account_key)
 resjson = response.json()
 access_token = resjson["access_token"]
 
-#Initialization...
-print ("\n-----------------------= AMS Py =----------------------");
-print ("Simple Python Library for Azure Media Services REST API");
-print ("-------------------------------------------------------\n");
-
-### get ams redirected url
-response = amspy.get_url(access_token)
+### list an asset
+print ("\n001 >>> Listing a Media Asset")
+response = amspy.list_media_asset(access_token)
 if (response.status_code == 200):
-	print("New Redirected URL: " + str(response.url))
+	resjson = response.json()
+	print("GET Status..............................: " + str(response.status_code))
+	for ma in resjson['d']['results']:
+		print("Media Asset Id..........................: " + str(ma['Id']))
+		print("Media Asset Id..........................: " + str(ma['Name']))
 else:
-	print("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
+	print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + asset_id + "' Listing ERROR." + str(response.content))
 

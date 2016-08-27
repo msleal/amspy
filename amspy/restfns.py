@@ -123,9 +123,9 @@ def do_sto_put(endpoint, body, content_length, access_token):
 		"Content-Length" : str(content_length)}
     return requests.put(endpoint, data=body, headers=headers)
 
-# do_get_url(endpoint, path, access_token)
+# do_get_url(endpoint, access_token)
 # do an HTTP GET request and return JSON
-def do_get_url(endpoint, access_token):
+def do_get_url(endpoint, access_token, flag=True):
     headers = {"Content-Type": content_acceptformat,
 		"DataServiceVersion": dsversion,
 		"MaxDataServiceVersion": mdsversion,
@@ -134,5 +134,8 @@ def do_get_url(endpoint, access_token):
 		"Authorization": "Bearer " + access_token,
 		"x-ms-version" : xmsversion}
     body = ''
-    response = requests.get(endpoint, headers=headers, allow_redirects=True)
+    response = requests.get(endpoint, headers=headers, allow_redirects=flag)
+    if(flag):
+    	if (response.status_code == 301):
+    		response = requests.get(response.headers['location'], data=body, headers=headers)
     return response

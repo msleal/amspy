@@ -18,12 +18,10 @@ def get_access_token(accountname, accountkey):
     body = "grant_type=client_credentials&client_id=" + accountname + "&client_secret=" + accountkey_encoded + " &scope=urn%3aWindowsAzureMediaServices"
     return do_auth(ams_auth_endpoint, body)
 
-# get_redirected_url(access_token)
-# get ams redirected url
-def get_redirected_url(access_token):
-    path = '/Assets'
-    endpoint = ''.join([ams_rest_endpoint, path])
-    return do_get_url(endpoint, access_token)
+# get_url(access_token)
+# get an specific url
+def get_url(access_token, endpoint=ams_rest_endpoint, flag=True):
+    return do_get_url(endpoint, access_token, flag)
 
 # list_media_asset(access_token, oid)
 # list a media asset(s)
@@ -204,6 +202,9 @@ def translate_job_state(nr):
     	return "Canceled"
     if (nr == "6"): 
     	return "Canceling"
+# Get specific url
+def retrieve_url_content(url):
+    return do_get(endpoint, path, access_token)
 
 ### Exceptions...
 # These, I think, should not be here... ;-)

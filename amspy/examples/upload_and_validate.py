@@ -53,12 +53,12 @@ ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, Enve
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 VIDEO_NAME = "movie.mp4"
 ISM_NAME = "movie.ism"
-VIDEO_PATH = "movie.mp4"
-ISM_PATH = "movie.ism"
+VIDEO_PATH = "assets/movie.mp4"
+ISM_PATH = "assets/movie.ism"
 PROCESSOR_NAME = "Windows Azure Media Packager"
 
 ### get ams redirected url
-response = amspy.get_redirected_url(access_token)
+response = amspy.get_url(access_token)
 if (response.status_code == 200):
         ams_redirected_rest_endpoint = str(response.url)
 else:
@@ -246,17 +246,8 @@ if (response.status_code == 204):
 else:
 	print("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + ISM_NAME + "' Update ERROR." + str(response.content))
 
-### link a content key
-print ("\n013 >>> Linking a Content Key to the Asset")
-response = amspy.link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint)
-if (response.status_code == 204):
-	print("GET Status..............................: " + str(response.status_code))
-	print("Media Content Key Linked................: OK")
-else:
-	print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + asset_id + "' Content Key Linking ERROR." + str(response.content))
-
 ### delete the locator
-print ("\n014 >>> Deleting the Locator")
+print ("\n013 >>> Deleting the Locator")
 response = amspy.delete_sas_locator(access_token, saslocator_id)
 if (response.status_code == 204):
 	print("DELETE Status...........................: " + str(response.status_code))
@@ -265,7 +256,7 @@ else:
 	print("DELETE Status...........................: " + str(response.status_code) + " - SAS URL Locator: '" + saslocator_id + "' Delete ERROR." + str(response.content))
 
 ### delete the asset access policy
-print ("\n015 >>> Deleting the Acess Policy")
+print ("\n014 >>> Deleting the Acess Policy")
 response = amspy.delete_asset_accesspolicy(access_token, accesspolicy_id)
 if (response.status_code == 204):
 	print("DELETE Status...........................: " + str(response.status_code))
@@ -274,7 +265,7 @@ else:
 	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + accesspolicy_id + "' Delete ERROR." + str(response.content))
 
 ### get the media processor
-print ("\n016 >>> Getting the Media Processor")
+print ("\n015 >>> Getting the Media Processor")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -288,7 +279,7 @@ else:
         print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
 ## create a media validation job
-print ("\n017 >>> Creating a Specific Media Job to validate the mp4")
+print ("\n016 >>> Creating a Specific Media Job to validate the mp4")
 response = amspy.validate_mp4_asset(access_token, processor_id, asset_id, "mp4validated")
 if (response.status_code == 201):
 	resjson = response.json()
@@ -299,7 +290,7 @@ else:
 	print("POST Status.............................: " + str(response.status_code) + " - Media Job Creation ERROR." + str(response.content))
 
 ### list a media job
-print ("\n018 >>> Listing a Media Job")
+print ("\n017 >>> Listing a Media Job")
 flag = 1
 while (flag):
 	response = amspy.list_media_job(access_token, job_id)
@@ -307,6 +298,7 @@ while (flag):
 		resjson = response.json()
 		job_state = str(resjson['d']['State'])
 		if (resjson['d']['EndTime'] != None):
+			joboutputassets_uri = resjson['d']['OutputMediaAssets']['__deferred']['uri']
 			flag = 0;
 		print("GET Status..............................: " + str(response.status_code))
 		print("Media Job Status........................: " + amspy.translate_job_state(job_state))
@@ -316,11 +308,32 @@ while (flag):
 
 ### delete an asset
 if (amspy.translate_job_state(job_state) == 'Finished'):
-	print ("\n019 >>> Deleting the Original Asset")
+	### delete an asset
+	print ("\n018 >>> Deleting the Original Asset")
 	response = amspy.delete_media_asset(access_token, asset_id)
 	if (response.status_code == 204):
 		print("DELETE Status...........................: " + str(response.status_code))
 		print("Asset Deleted...........................: " + asset_id)
-		print ("\n We got here? Cool!")
 	else:
 		print("DELETE Status...........................: " + str(response.status_code) + " - Asset: '" + asset_id + "' Delete ERROR." + str(response.content))
+
+	## getting the encoded asset id
+	print ("\n019 >>> Getting Encoded Media Asset Id")
+	response = amspy.get_url(access_token, joboutputassets_uri, False)
+	if (response.status_code == 200):
+		resjson = response.json()
+		encoded_asset_id = resjson['d']['results'][0]['Id']
+		print("GET Status..............................: " + str(response.status_code))
+		print("Encoded Media Asset Id..................: " + encoded_asset_id)
+	else:
+		print("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
+
+	### link a content key
+	print ("\n020 >>> Linking a Content Key to the Encoded Asset")
+	response = amspy.link_content_key(access_token, encoded_asset_id, encryptionkey_id, ams_redirected_rest_endpoint)
+	if (response.status_code == 204):
+		print("GET Status..............................: " + str(response.status_code))
+		print("Media Content Key Linked................: OK")
+		print ("\n We got here? Cool!")
+	else:
+		print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + encoded_asset_id + "' Content Key Linking ERROR." + str(response.content))
