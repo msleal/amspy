@@ -378,3 +378,5 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		print ("\n We got here? Cool!")
 	else:
 		print("GET Status..............................: " + str(response.status_code) + " - Authorization Policy: '" + authorization_policy_id + "' Adding ERROR." + str(response.content))
+else:
+	print ("\n Something went wrong... we could not validate the MP4 Asset!")
