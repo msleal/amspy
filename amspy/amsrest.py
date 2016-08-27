@@ -201,10 +201,10 @@ def link_contentkey_authorization_policy(access_token, ckap_id, options_id, ams_
 
 # add_authorization_policy(access_token, oid)
 # add a authorization policy
-def add_authorization_policy(access_token, oid):
+def add_authorization_policy(access_token, ck_id, oid):
     path = '/ContentKeys'
     body = '{"AuthorizationPolicyId":"' + oid + '"}'
-    return helper_add(access_token, oid, path, body)
+    return helper_add(access_token, ck_id, path, body)
 
 # update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name)
 # update a media assetfile
@@ -236,8 +236,8 @@ def set_asset_accesspolicy(access_token, duration):
 
 ### Helpers...
 # Generic functions not intended for "external" use... 
-def helper_add(access_token, oid, path, body):
-    full_path = ''.join([path, "('", oid, "')"])
+def helper_add(access_token, ck_id, path, body):
+    full_path = ''.join([path, "('", ck_id, "')"])
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
     return do_put(endpoint, full_path_encoded, body, access_token, "json_only", "1.0;NetFx")

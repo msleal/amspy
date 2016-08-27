@@ -48,29 +48,19 @@ def do_put(endpoint, path, body, access_token, format="json", ds_min_version="3.
     if (format == "json_only"):
     	dsversion = ds_min_version
     	content_acceptformat = json_only_acceptformat
-    	acceptformat = json_only_acceptformat
-    	headers = {"Content-Type": content_acceptformat,
-			"DataServiceVersion": dsversion,
-			"MaxDataServiceVersion": mdsversion,
-			"Accept": acceptformat,
-			"Accept-Charset" : charset,
-			"Authorization": "Bearer " + access_token,
-			"x-ms-version" : xmsversion,
-			"Content-Length": "78"}
-    else:
-    	headers = {"Content-Type": content_acceptformat,
-			"DataServiceVersion": dsversion,
-			"MaxDataServiceVersion": mdsversion,
-			"Accept": acceptformat,
-			"Accept-Charset" : charset,
-			"Authorization": "Bearer " + access_token,
-			"x-ms-version" : xmsversion}
-    return requests.put(endpoint, data=body, headers=headers)
+    headers = {"Content-Type": content_acceptformat,
+		"DataServiceVersion": dsversion,
+		"MaxDataServiceVersion": mdsversion,
+		"Accept": acceptformat,
+		"Accept-Charset" : charset,
+		"Authorization": "Bearer " + access_token,
+		"x-ms-version" : xmsversion}
+    response = requests.put(endpoint, data=body, headers=headers, allow_redirects=False)
     # AMS response to the first call can be a redirect, 
     # so we handle it here to make it transparent for the caller...
     if (response.status_code == 301):
-         redirected_url = ''.join([response.headers['location'], path])
-         response = requests.put(redirected_url, data=body, headers=headers)
+    	redirected_url = ''.join([response.headers['location'], path])
+    	response = requests.put(redirected_url, data=body, headers=headers)
     return response
 
 # do_post(endpoint, body, access_token, format="json", ds_min_version="3.0;NetFx")

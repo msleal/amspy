@@ -75,10 +75,10 @@ if (response.status_code == 200):
 	resjson = response.json()
 	count = len(resjson['d']['results']);
 	if (count > 0):
-		encryptionkey_id = str(resjson['d']['results'][0]['Id'])
+		contentkey_id = str(resjson['d']['results'][0]['Id'])
 		protectionkey_id = str(resjson['d']['results'][0]['ProtectionKeyId'])
 		print("GET Status..............................: " + str(response.status_code))
-		print("AES Content Key Id......................: " + encryptionkey_id)
+		print("AES Content Key Id......................: " + contentkey_id)
 		print("AES Content Protection Key Id...........: " + protectionkey_id)
 		print("AES Content Key Checksum................: " + str(resjson['d']['results'][0]['Checksum']))
 	else:
@@ -330,8 +330,8 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		print("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
 	### link a content key
-	print ("\n020 >>> Linking a Content Key to the Encoded Asset")
-	response = amspy.link_content_key(access_token, encoded_asset_id, encryptionkey_id, ams_redirected_rest_endpoint)
+	print ("\n020 >>> Linking the Content Key to the Encoded Asset")
+	response = amspy.link_content_key(access_token, encoded_asset_id, contentkey_id, ams_redirected_rest_endpoint)
 	if (response.status_code == 204):
 		print("GET Status..............................: " + str(response.status_code))
 		print("Media Content Key Linked................: OK")
@@ -339,7 +339,7 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		print("GET Status..............................: " + str(response.status_code) + " - Media Asset: '" + encoded_asset_id + "' Content Key Linking ERROR." + str(response.content))
 
 	### configure content key authorization policy
-	print ("\n021 >>> Creating a Content Key Authorization Policy")
+	print ("\n021 >>> Creating the Content Key Authorization Policy")
 	response = amspy.create_contentkey_authorization_policy(access_token, AUTH_POLICY)
 	if (response.status_code == 201):
 		resjson = response.json()
@@ -370,8 +370,8 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		print("GET Status..............................: " + str(response.status_code) + " - Content Key Authorization Policy '" + authorization_policy_id + "' Linking ERROR." + str(response.content))
 
 	### link a contentkey authorization policies with options
-	print ("\n024 >>> Add Authorization to the Content Key")
-	response = amspy.add_authorization_policy(access_token, authorization_policy_id)
+	print ("\n024 >>> Add the Authorization Policy to the Content Key")
+	response = amspy.add_authorization_policy(access_token, contentkey_id, authorization_policy_id)
 	if (response.status_code == 204):
 		print("GET Status..............................: " + str(response.status_code))
 		print("Authorization Policy Added..............: OK")
