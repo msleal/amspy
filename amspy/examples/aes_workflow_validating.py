@@ -57,6 +57,7 @@ VIDEO_PATH = "assets/movie.mp4"
 ISM_PATH = "assets/movie.ism"
 PROCESSOR_NAME = "Windows Azure Media Packager"
 AUTH_POLICY = '{"Name":"Open Authorization Policy"}'
+KEY_DELIVERY_TYPE = "2" # 1=PlayReady, 2=AES Envelope Encryption
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
@@ -91,6 +92,7 @@ else:
 	print("GET Status.............................: " + str(response.status_code) + " - AES Content Key Listing ERROR." + str(response.content))
 	exit(1);
 
+######################### PHASE 1: UPLOAD and VALIDATE #########################
 ### create an asset
 print ("\n001 >>> Creating a Media Asset")
 response = amspy.create_media_asset(access_token, NAME)
@@ -307,6 +309,7 @@ while (flag):
 		print("GET Status..............................: " + str(response.status_code) + " - Media Job: '" + asset_id + "' Listing ERROR." + str(response.content))
 	time.sleep(5);
 
+######################### PHASE 2: PROTECT and STREAM #########################
 ### delete an asset
 if (amspy.translate_job_state(job_state) == 'Finished'):
 	### delete an asset
@@ -375,8 +378,30 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 	if (response.status_code == 204):
 		print("GET Status..............................: " + str(response.status_code))
 		print("Authorization Policy Added..............: OK")
-		print ("\n We got here? Cool!")
 	else:
 		print("GET Status..............................: " + str(response.status_code) + " - Authorization Policy: '" + authorization_policy_id + "' Adding ERROR." + str(response.content))
+
+	### get the delivery url
+	print ("\n025 >>> Getting the Delivery URL")
+	response = amspy.get_delivery_url(access_token, contentkey_id, KEY_DELIVERY_TYPE)
+	if (response.status_code == 200):
+		resjson = response.json()
+		keydelivery_url = str(resjson['d']['GetKeyDeliveryUrl']);
+		print("POST Status.............................: " + str(response.status_code))
+		print("Key Delivery URL .......................: " + keydelivery_url)
+	else:
+		print("POST Status.............................: " + str(response.status_code) + " - Key Delivery: '" + contentkey_id + "' URL Getting ERROR." + str(response.content))
+
+	### create asset delivery policy
+	print ("\n026 >>> Creating Asset Delivery Policy")
+	response = amspy.create_asset_delivery_policy(access_token, account_name)
+	if (response.status_code == 201):
+		resjson = response.json()
+		assetdeliverypolicy_id = str(resjson['d']['Id']);
+		print("POST Status.............................: " + str(response.status_code))
+		print("Key Delivery URL .......................: " + assetdeliverypolicy_id)
+		print ("\n -> We got here? Cool! Now you just need the popcorn...")
+	else:
+		print("POST Status.............................: " + str(response.status_code) + " - Asset Delivery Policy Creating ERROR." + str(response.content))
 else:
 	print ("\n Something went wrong... we could not validate the MP4 Asset!")

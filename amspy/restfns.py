@@ -8,26 +8,27 @@ License: MIT (see LICENSE.txt file for details)
 
 import requests
 import json
-from .settings import json_acceptformat, json_only_acceptformat, xml_acceptformat, batch_acceptformat, charset, dsversion, mdsversion, xmsversion
+from .settings import json_acceptformat, json_only_acceptformat, xml_acceptformat, batch_acceptformat, charset, dsversion_min, dsversion_max, xmsversion
 
 #Defaults
-content_acceptformat = json_acceptformat
-acceptformat = json_acceptformat
 
 # do_auth(endpoint, body, access_token)
 # do an HTTP POST request for authentication (acquire an access token) and return JSON
 def do_auth(endpoint, body):
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     headers = {"content-type": "application/x-www-form-urlencoded",
-                "Expect" : "100-continue",
                 "Accept": acceptformat}
     return requests.post(endpoint, data=body, headers=headers)
 
 # do_get(endpoint, path, access_token)
 # do an HTTP GET request and return JSON
 def do_get(endpoint, path, access_token):
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     headers = {"Content-Type": content_acceptformat,
-		"DataServiceVersion": dsversion,
-		"MaxDataServiceVersion": mdsversion,
+		"DataServiceVersion": min_ds,
+		"MaxDataServiceVersion": max_ds,
 		"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"Authorization": "Bearer " + access_token,
@@ -44,13 +45,14 @@ def do_get(endpoint, path, access_token):
 # do_put(endpoint, path, body, access_token, format="json", ds_min_version="3.0;NetFx")
 # do an HTTP PUT request and return JSON
 def do_put(endpoint, path, body, access_token, format="json", ds_min_version="3.0;NetFx"):
-    global dsversion, accept_format, content_acceptformat
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     if (format == "json_only"):
-    	dsversion = ds_min_version
+    	min_ds = ds_min_version
     	content_acceptformat = json_only_acceptformat
     headers = {"Content-Type": content_acceptformat,
-		"DataServiceVersion": dsversion,
-		"MaxDataServiceVersion": mdsversion,
+		"DataServiceVersion": min_ds,
+		"MaxDataServiceVersion": max_ds,
 		"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"Authorization": "Bearer " + access_token,
@@ -66,16 +68,17 @@ def do_put(endpoint, path, body, access_token, format="json", ds_min_version="3.
 # do_post(endpoint, body, access_token, format="json", ds_min_version="3.0;NetFx")
 # do an HTTP POST request and return JSON
 def do_post(endpoint, path, body, access_token, format="json", ds_min_version="3.0;NetFx"):
-    global dsversion, acceptformat, content_acceptformat
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     if (format == "json_only"):
-    	dsversion = ds_min_version
+    	min_ds = ds_min_version
     	content_acceptformat = json_only_acceptformat
     if (format == "xml"):
     	content_acceptformat = xml_acceptformat
     	acceptformat = xml_acceptformat + ",application/xml" 
     headers = {"Content-Type": content_acceptformat, 
-		"DataServiceVersion": dsversion,
-		"MaxDataServiceVersion": mdsversion,
+		"DataServiceVersion": min_ds,
+		"MaxDataServiceVersion": max_ds,
 		"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"Authorization": "Bearer " + access_token,
@@ -91,9 +94,11 @@ def do_post(endpoint, path, body, access_token, format="json", ds_min_version="3
 # do_patch(endpoint, path, body, access_token)
 # do an HTTP PATCH request and return JSON
 def do_patch(endpoint, path, body, access_token):
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     headers = {"Content-Type": content_acceptformat, 
-		"DataServiceVersion": dsversion,
-		"MaxDataServiceVersion": mdsversion,
+		"DataServiceVersion": min_ds,
+		"MaxDataServiceVersion": max_ds,
 		"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"Authorization": "Bearer " + access_token,
@@ -109,8 +114,10 @@ def do_patch(endpoint, path, body, access_token):
 # do_delete(endpoint, access_token)
 # do an HTTP DELETE request and return JSON
 def do_delete(endpoint, path, access_token):
-    headers = {"DataServiceVersion": dsversion,
-		"MaxDataServiceVersion": mdsversion,
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
+    headers = {"DataServiceVersion": min_ds,
+		"MaxDataServiceVersion": max_ds,
 		"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"Authorization": 'Bearer ' + access_token,
@@ -126,6 +133,8 @@ def do_delete(endpoint, path, access_token):
 # do_sto_put(endpoint, body, access_token)
 # do an HTTP PUT request to the azure storage api and return JSON
 def do_sto_put(endpoint, body, content_length, access_token):
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     headers = {"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"x-ms-blob-type" : "BlockBlob",
@@ -138,9 +147,11 @@ def do_sto_put(endpoint, body, content_length, access_token):
 # do_get_url(endpoint, access_token)
 # do an HTTP GET request and return JSON
 def do_get_url(endpoint, access_token, flag=True):
+    global dsversion_min, dsversion_max, json_acceptformat, json_acceptformat
+    min_ds = dsversion_min; max_ds = dsversion_max; content_acceptformat = json_acceptformat; acceptformat = json_acceptformat
     headers = {"Content-Type": content_acceptformat,
-		"DataServiceVersion": dsversion,
-		"MaxDataServiceVersion": mdsversion,
+		"DataServiceVersion": min_ds,
+		"MaxDataServiceVersion": max_ds,
 		"Accept": acceptformat,
 		"Accept-Charset" : charset,
 		"Authorization": "Bearer " + access_token,

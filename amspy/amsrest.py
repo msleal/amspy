@@ -130,6 +130,21 @@ def create_sas_locator(access_token, asset_id, accesspolicy_id):
 	}'
     return do_post(endpoint, path, body, access_token)
 
+# create_asset_delivery_policy(access_token, asset_id, accesspolicy_id)
+# create an asset delivery policy
+def create_asset_delivery_policy(access_token, ams_account):
+    path = '/AssetDeliveryPolicies'
+    endpoint = ''.join([ams_rest_endpoint, path])
+    body = '{ \
+		"Name":"AssetDeliveryPolicy", \
+		"AssetDeliveryProtocol":"4", \
+		"AssetDeliveryPolicyType":"3", \
+		"AssetDeliveryConfiguration":"[{ \
+			\\"Key\\":\\"2\\", \
+			\\"Value\\":\\"https://' + ams_account + '.keydelivery.mediaservices.windows.net/\\"}]" \
+	}'
+    return do_post(endpoint, path, body, access_token)
+
 # create_media_task(access_token, processor_id, asset_id, content)
 # create a media task
 def create_media_task(access_token, processor_id, asset_id, content):
@@ -233,6 +248,16 @@ def set_asset_accesspolicy(access_token, duration):
 		"Permissions": "2" \
 	}'
     return do_post(endpoint, path, body, access_token)
+
+# get_delivery_url(access_token, ck_id, key_type)
+# get a delivery url
+def get_delivery_url(access_token, ck_id, key_type):
+    path = '/ContentKeys'
+    full_path = ''.join([path, "('", ck_id, "')", "/GetKeyDeliveryUrl"])
+    endpoint = ''.join([ams_rest_endpoint, full_path])
+
+    body = '{"keyDeliveryType": "' + key_type + '"}'
+    return do_post(endpoint, full_path, body, access_token)
 
 ### Helpers...
 # Generic functions not intended for "external" use... 
