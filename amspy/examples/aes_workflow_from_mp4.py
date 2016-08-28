@@ -7,7 +7,7 @@ import os
 import json
 import amspy
 import time
-import pytz
+#import pytz
 import logging
 import datetime
 
@@ -427,9 +427,9 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 
 	### create an ondemand streaming locator
 	print ("\n029 >>> Create an OnDemand Streaming Locator")
-	#starttime = datetime.datetime.now(pytz.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
-	starttime = datetime.datetime.now(pytz.timezone(time_zone)).strftime("%Y-%m-%dT%H:%M:%SZ")
-	response = amspy.create_ondemand_streaming_locator(access_token, encoded_asset_id, view_accesspolicy_id, starttime)
+	#starttime = datetime.datetime.now(pytz.timezone(time_zone)).strftime("%Y-%m-%dT%H:%M:%SZ")
+	#response = amspy.create_ondemand_streaming_locator(access_token, encoded_asset_id, view_accesspolicy_id, starttime)
+	response = amspy.create_ondemand_streaming_locator(access_token, encoded_asset_id, view_accesspolicy_id)
 	if (response.status_code == 201):
 		resjson = response.json()
 		ondemandlocator_id = str(resjson['d']['Id']);

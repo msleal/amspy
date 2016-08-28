@@ -190,18 +190,25 @@ def create_contentkey_authorization_policy_options(access_token, key_delivery_ty
 	}'
     return do_post(endpoint, path, body, access_token, "json_only")
 
-# create_ondemand_streaming_locator(access_token, encoded_asset_id, asset_id, pid, starttime)
+# create_ondemand_streaming_locator(access_token, encoded_asset_id, asset_id, pid, starttime="None")
 # create an ondemand streaming locator
-def create_ondemand_streaming_locator(access_token, encoded_asset_id, pid, starttime):
+def create_ondemand_streaming_locator(access_token, encoded_asset_id, pid, starttime=None):
     path = '/Locators'
     endpoint = ''.join([ams_rest_endpoint, path])
 
-    body = '{ \
-		"AccessPolicyId":"' + pid + '", \
-		"AssetId":"' + encoded_asset_id + '", \
-		"StartTime":"' + str(starttime) + '", \
-		"Type": "2" \
-	}' 
+    if(starttime == None):
+    	body = '{ \
+			"AccessPolicyId":"' + pid + '", \
+			"AssetId":"' + encoded_asset_id + '", \
+			"Type": "2" \
+		}' 
+    else:
+    	body = '{ \
+			"AccessPolicyId":"' + pid + '", \
+			"AssetId":"' + encoded_asset_id + '", \
+			"StartTime":"' + str(starttime) + '", \
+			"Type": "2" \
+		}' 
     return do_post(endpoint, path, body, access_token, "json_only")
 
 # link_asset_content_key(access_token, asset_id, encryptionkey_id)
