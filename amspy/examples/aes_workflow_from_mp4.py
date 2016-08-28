@@ -7,7 +7,7 @@ import os
 import json
 import amspy
 import time
-#import pytz
+import pytz
 import logging
 import datetime
 
@@ -80,6 +80,7 @@ if (response.status_code == 200):
 		protectionkey_id = str(resjson['d']['results'][0]['ProtectionKeyId'])
 		print("GET Status..............................: " + str(response.status_code))
 		print("AES Content Key Id......................: " + contentkey_id)
+		print("AES Content Key Name....................: " + str(resjson['d']['results'][0]['Name']))
 		print("AES Content Protection Key Id...........: " + protectionkey_id)
 		print("AES Content Key Checksum................: " + str(resjson['d']['results'][0]['Checksum']))
 	else:
@@ -121,7 +122,7 @@ else:
 
 ### create an assetfile
 print ("\n003 >>> Creating a Media Assetfile (for the video file)")
-response = amspy.create_media_assetfile(access_token, asset_id, VIDEO_NAME, "false", "true")
+response = amspy.create_media_assetfile(access_token, asset_id, VIDEO_NAME, "false", "false")
 if (response.status_code == 201):
 	resjson = response.json()
 	video_assetfile_id = str(resjson['d']['Id']);
@@ -134,7 +135,7 @@ else:
 
 ### create an assetfile
 print ("\n004 >>> Creating a Media Assetfile (for the manifest file)")
-response = amspy.create_media_assetfile(access_token, asset_id, ISM_NAME, "true", "true")
+response = amspy.create_media_assetfile(access_token, asset_id, ISM_NAME, "true", "false")
 if (response.status_code == 201):
 	resjson = response.json()
 	ism_assetfile_id = str(resjson['d']['Id']);
@@ -145,15 +146,15 @@ if (response.status_code == 201):
 else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + ISM_NAME + "' Creation ERROR." + str(response.content))
 
-### set an asset access policy
-print ("\n005 >>> Setting an Asset Access Policy")
+### create an asset access policy
+print ("\n005 >>> Creating an Asset Access Policy")
 duration = "440"
-response = amspy.set_asset_accesspolicy(access_token, duration)
+response = amspy.create_asset_accesspolicy(access_token, "NewUploadPolicy", duration, "2")
 if (response.status_code == 201):
 	resjson = response.json()
-	accesspolicy_id = str(resjson['d']['Id']);
+	write_accesspolicy_id = str(resjson['d']['Id']);
 	print("POST Status.............................: " + str(response.status_code))
-	print("Asset Access Policy Id..................: " + accesspolicy_id)
+	print("Asset Access Policy Id..................: " + write_accesspolicy_id)
 	print("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
 else:
 	print("POST Status: " + str(response.status_code) + " - Asset Access Policy Creation ERROR." + str(response.content))
@@ -176,8 +177,8 @@ print ("\n007 >>> Creating a SAS Locator")
 #Also, your StartTime value must be in the following DateTime format: YYYY-MM-DDTHH:mm:ssZ (for example, "2014-05-23T17:53:50Z").
 # EDITED: Not providing starttime is the best approach to be able to upload a file immediatly...
 #starttime = datetime.datetime.now(pytz.timezone(time_zone)).strftime("%Y-%m-%dT%H:%M:%SZ")
-#response = amspy.create_sas_locator(access_token, asset_id, accesspolicy_id, starttime)
-response = amspy.create_sas_locator(access_token, asset_id, accesspolicy_id)
+#response = amspy.create_sas_locator(access_token, asset_id, write_accesspolicy_id, starttime)
+response = amspy.create_sas_locator(access_token, asset_id, write_accesspolicy_id)
 if (response.status_code == 201):
 	resjson = response.json()
 	saslocator_id = str(resjson['d']['Id']);
@@ -204,7 +205,6 @@ else:
 
 ### upload the video file
 print ("\n009 >>> Uploading the Video File")
-#datetime = datetime.datetime.now(pytz.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
 saslocator_video_url = ''.join([saslocator_baseuri, '/', VIDEO_NAME, saslocator_cac])
 with open(VIDEO_PATH, mode='rb') as file:
 	video_content = file.read()
@@ -260,12 +260,12 @@ else:
 
 ### delete the asset access policy
 print ("\n014 >>> Deleting the Acess Policy")
-response = amspy.delete_asset_accesspolicy(access_token, accesspolicy_id)
+response = amspy.delete_asset_accesspolicy(access_token, write_accesspolicy_id)
 if (response.status_code == 204):
 	print("DELETE Status...........................: " + str(response.status_code))
-	print("Asset Access Policy Deleted.............: " + accesspolicy_id)
+	print("Asset Access Policy Deleted.............: " + write_accesspolicy_id)
 else:
-	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + accesspolicy_id + "' Delete ERROR." + str(response.content))
+	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
 ### get the media processor
 print ("\n015 >>> Getting the Media Processor")
@@ -334,7 +334,7 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 
 	### link a content key
 	print ("\n020 >>> Linking the Content Key to the Encoded Asset")
-	response = amspy.link_content_key(access_token, encoded_asset_id, contentkey_id, ams_redirected_rest_endpoint)
+	response = amspy.link_asset_content_key(access_token, encoded_asset_id, contentkey_id, ams_redirected_rest_endpoint)
 	if (response.status_code == 204):
 		print("GET Status..............................: " + str(response.status_code))
 		print("Media Content Key Linked................: OK")
@@ -382,13 +382,13 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		print("GET Status..............................: " + str(response.status_code) + " - Authorization Policy: '" + authorization_policy_id + "' Adding ERROR." + str(response.content))
 
 	### get the delivery url
-	print ("\n025 >>> Getting the Delivery URL")
+	print ("\n025 >>> Getting the Key Delivery URL")
 	response = amspy.get_delivery_url(access_token, contentkey_id, KEY_DELIVERY_TYPE)
 	if (response.status_code == 200):
 		resjson = response.json()
 		keydelivery_url = str(resjson['d']['GetKeyDeliveryUrl']);
 		print("POST Status.............................: " + str(response.status_code))
-		print("Key Delivery URL .......................: " + keydelivery_url)
+		print("Key Delivery URL........................: " + keydelivery_url)
 	else:
 		print("POST Status.............................: " + str(response.status_code) + " - Key Delivery: '" + contentkey_id + "' URL Getting ERROR." + str(response.content))
 
@@ -399,9 +399,46 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 		resjson = response.json()
 		assetdeliverypolicy_id = str(resjson['d']['Id']);
 		print("POST Status.............................: " + str(response.status_code))
-		print("Key Delivery URL .......................: " + assetdeliverypolicy_id)
-		print ("\n -> We got here? Cool! Now you just need the popcorn...")
+		print("Asset Delivery Policy Id................: " + assetdeliverypolicy_id)
 	else:
 		print("POST Status.............................: " + str(response.status_code) + " - Asset Delivery Policy Creating ERROR." + str(response.content))
+
+	### link the asset with the asset delivery policy
+	print ("\n027 >>> Linking the Asset with the Asset Delivery Policy")
+	response = amspy.link_asset_delivery_policy(access_token, encoded_asset_id, assetdeliverypolicy_id, ams_redirected_rest_endpoint)
+	if (response.status_code == 204):
+		print("GET Status..............................: " + str(response.status_code))
+		print("Asset Delivery Policy Linked............: OK")
+	else:
+		print("GET Status..............................: " + str(response.status_code) + " - Asset: '" + encoded_asset_id + "' Delivery Policy Linking ERROR." + str(response.content))
+
+	### create an asset access policy
+	print ("\n028 >>> Creating an Asset Access Policy")
+	duration = "43200"
+	response = amspy.create_asset_accesspolicy(access_token, "NewViewAccessPolicy", duration)
+	if (response.status_code == 201):
+		resjson = response.json()
+		view_accesspolicy_id = str(resjson['d']['Id']);
+		print("POST Status.............................: " + str(response.status_code))
+		print("Asset Access Policy Id..................: " + view_accesspolicy_id)
+		print("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
+	else:
+		print("POST Status: " + str(response.status_code) + " - Asset Access Policy Creation ERROR." + str(response.content))
+
+	### create an ondemand streaming locator
+	print ("\n029 >>> Create an OnDemand Streaming Locator")
+	#starttime = datetime.datetime.now(pytz.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
+	starttime = datetime.datetime.now(pytz.timezone(time_zone)).strftime("%Y-%m-%dT%H:%M:%SZ")
+	response = amspy.create_ondemand_streaming_locator(access_token, encoded_asset_id, view_accesspolicy_id, starttime)
+	if (response.status_code == 201):
+		resjson = response.json()
+		ondemandlocator_id = str(resjson['d']['Id']);
+		print("GET Status..............................: " + str(response.status_code))
+		print("OnDemand Streaming Locator Id...........: " + ondemandlocator_id)
+		print("OnDemand Streaming Locator Path.........: " + str(resjson['d']['Path']))
+		print("HLS + AES URL...........................: " + str(resjson['d']['Path']) + ISM_NAME + "/manifest(format=m3u8-aapl)")
+		print ("\n -> We got here? Cool! Now you just need the popcorn...")
+	else:
+		print("GET Status..............................: " + str(response.status_code) + " - OnDemand Streaming Locator Creating ERROR." + str(response.content))
 else:
 	print ("\n Something went wrong... we could not validate the MP4 Asset!")

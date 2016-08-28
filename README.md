@@ -18,10 +18,10 @@ create_media_asset(access_token, name, options=0) - create a media asset
 create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", is_encrypted="false", encryption_scheme="None", encryptionkey_id="None") - create a media assetfile
 create_sas_locator(access_token, asset_id, accesspolicy_id) - create a sas url locator
 create_media_task(access_token, name, processor_id, asset_id, content) - create a media task
+create_asset_accesspolicy(access_token, duration) - create an asset access policy
 create_media_job(access_token, name, job_definition, processor_id, asset_id, task_body) -create a job
 link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint) - link a content key with a media asset
 update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name) - update assetfile content length
-set_asset_accesspolicy(access_token, duration) - set the asset access policy
 get_delivery_url(access_token, ck_id, key_type) - get the key delivery url
 upload_block_blob(access_token, endpoint, content, content_length) - upload a file as a block blob
 validate_mp4_asset(access_token, processor_id, asset_id, output_assetname) - validade an encoded MP4 asset

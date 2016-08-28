@@ -190,14 +190,40 @@ def create_contentkey_authorization_policy_options(access_token, key_delivery_ty
 	}'
     return do_post(endpoint, path, body, access_token, "json_only")
 
-# link_content_key(access_token, asset_id, encryptionkey_id)
-# link a content key with an asset
-def link_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint):
+# create_ondemand_streaming_locator(access_token, encoded_asset_id, asset_id, pid, starttime)
+# create an ondemand streaming locator
+def create_ondemand_streaming_locator(access_token, encoded_asset_id, pid, starttime):
+    path = '/Locators'
+    endpoint = ''.join([ams_rest_endpoint, path])
+
+    body = '{ \
+		"AccessPolicyId":"' + pid + '", \
+		"AssetId":"' + encoded_asset_id + '", \
+		"StartTime":"' + str(starttime) + '", \
+		"Type": "2" \
+	}' 
+    return do_post(endpoint, path, body, access_token, "json_only")
+
+# link_asset_content_key(access_token, asset_id, encryptionkey_id)
+# link an asset with a content key
+def link_asset_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint):
     path = '/Assets'
     full_path = ''.join([path, "('", asset_id, "')", "/$links/ContentKeys"])
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
     uri = ''.join([ams_redirected_rest_endpoint, 'ContentKeys', "('", encryptionkey_id, "')"])
+
+    body = '{"uri": "' + uri + '"}'
+    return do_post(endpoint, full_path_encoded, body, access_token)
+
+# link_asset_deliver_policy(access_token, asset_id, encryptionkey_id)
+# link an asset with a delivery policy
+def link_asset_delivery_policy(access_token, asset_id, adp_id, ams_redirected_rest_endpoint):
+    path = '/Assets'
+    full_path = ''.join([path, "('", asset_id, "')", "/$links/DeliveryPolicies"])
+    full_path_encoded = urllib.parse.quote(full_path, safe='')
+    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
+    uri = ''.join([ams_redirected_rest_endpoint, 'AssetDeliveryPolicies', "('", adp_id, "')"])
 
     body = '{"uri": "' + uri + '"}'
     return do_post(endpoint, full_path_encoded, body, access_token)
@@ -237,15 +263,15 @@ def update_media_assetfile(access_token, parent_asset_id, asset_id, content_leng
 	}'
     return do_patch(endpoint, full_path_encoded, body, access_token)
 
-# set_asset_accesspolicy(access_token, duration)
-# set a asset access policy
-def set_asset_accesspolicy(access_token, duration):
+# create_asset_accesspolicy(access_token, duration)
+# create an asset access policy
+def create_asset_accesspolicy(access_token, name, duration, permission="1"):
     path = '/AccessPolicies'
     endpoint = ''.join([ams_rest_endpoint, path])
     body = '{ \
-		"Name": "NewUploadPolicy", \
+		"Name": "' + str(name) + '", \
 		"DurationInMinutes": "' + duration + '", \
-		"Permissions": "2" \
+		"Permissions": "' + permission + '" \
 	}'
     return do_post(endpoint, path, body, access_token)
 
@@ -339,7 +365,7 @@ def validate_mp4_asset(access_token, processor_id, asset_id, output_assetname):
    		"Tasks":[{ \
        	  		"Configuration":"<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><taskDefinition xmlns=\\"http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#\\"><name>MP4 Preprocessor</name><id>859515BF-9BA3-4BDD-A3B6-400CEF07F870</id><description xml:lang=\\"en\\" /><inputFolder /><properties namespace=\\"http://schemas.microsoft.com/iis/media/V4/TM/MP4Preprocessor#\\" prefix=\\"mp4p\\"><property name=\\"SmoothRequired\\" value=\\"false\\" /><property name=\\"HLSRequired\\" value=\\"true\\" /></properties><taskCode><type>Microsoft.Web.Media.TransformManager.MP4PreProcessor.MP4Preprocessor_Task, Microsoft.Web.Media.TransformManager.MP4Preprocessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35</type></taskCode></taskDefinition>", \
        	  		"MediaProcessorId":"' + processor_id + '", \
-       	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"1\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
+       	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"0\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
       		}] \
 	}'
 
