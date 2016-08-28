@@ -1,4 +1,4 @@
-# AES WORKFLOW (From MP4)
+# HLS+AES WORKFLOW (From MP4)
 
 ### Upload, validate, protect (dinamically with AES Envelope encryption), and stream your MP4 Videos.
 This example does the complete aes workflow from uploading an already encode MP4 file,
@@ -8,7 +8,7 @@ configuration, authorization policies, and etc), as well as configuring the HLS 
 export PYTHONDONTWRITEBYTECODE=1; python3 aes_workflow_from_mp4.py
 ```
 
-# AES WORKFLOW (From RAW)
+# HLS+AES WORKFLOW (From RAW)
 
 ### Upload, encode, protect (dinamically with AES Envelope encryption), and stream your Raw Video.
 This example does the complete aes workflow from uploading an mezzanine video file,
