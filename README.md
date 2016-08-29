@@ -37,10 +37,10 @@ if (response.status_code == 200):
                 print("Media Asset Name........................: " + ma['Id'])
                 print("Media Asset Id..........................: " + ma['Name'])
 else:
-        print("POST Status.............................: " + str(response.status_code) + " - Media Asset Listing ERROR." + str(response.content))
+        print("GET Status: " + str(response.status_code) + " ERROR." + str(response.content))
 ```
 
-### AMSPy Python Library Functions:
+### AMSPy Library Functions:
 ```
 get_access_token(accountname, accountkey) - get the access token/authenticate
 get_url(access_token, endpoint=ams_rest_endpoint, flag=True) - get a specific url
