@@ -1,6 +1,45 @@
 #### Simple Python Library for Azure Media Services REST API
 The amspy is a library to provide a simple Azure Media Services REST interface for python. This is a personal project and NOT an official implementation of the Azure Media Services SDK for python. The only purpose of this library is for educational purposes, so people can have an easy way to understand how to interact with cloud REST apis, and learn from the examples provided in this module as well as the debug information available in the logs. Any feedback, comments or bugs, please send directly to the module owner, and go to https://azure.microsoft.com if you are looking for official Microsoft Azure SDKs.
 
+## Using AMSPy
+A detailed set of **amspy** programming examples can be found here: <a href="https://github.com/msleal/amspy/tree/master/amspy/examples">AMSPy Python library programming examples</a>.
+
+# Listing Media Assets:
+```
+import os
+import json
+import amspy
+
+# Load Azure app defaults
+try:
+        with open('config.json') as configFile:
+                configData = json.load(configFile)
+except FileNotFoundError:
+        print("ERROR: Expecting config.json in current folder")
+        sys.exit()
+
+subscription_id = configData['subscriptionId']
+rg_name = configData['rgName']
+account_name = configData['accountName']
+account_key = configData['accountKey']
+
+# Get the access token...
+response = amspy.get_access_token(account_name, account_key)
+resjson = response.json()
+access_token = resjson["access_token"]
+
+### list media assets
+response = amspy.list_media_asset(access_token)
+if (response.status_code == 200):
+        resjson = response.json()
+        print("POST Status.............................: " + str(response.status_code))
+        for ma in resjson['d']['results']:
+                print("Media Asset Name........................: " + ma['Id'])
+                print("Media Asset Id..........................: " + ma['Name'])
+else:
+        print("POST Status.............................: " + str(response.status_code) + " - Media Asset Listing ERROR." + str(response.content))
+```
+
 ```
 get_access_token(accountname, accountkey) - get the access token/authenticate
 get_url(access_token, endpoint=ams_rest_endpoint, flag=True) - get a specific url
