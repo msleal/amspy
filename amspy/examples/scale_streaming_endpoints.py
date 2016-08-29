@@ -7,7 +7,6 @@ import os
 import json
 import amspy
 import time
-#import pytz
 import logging
 import datetime
 
@@ -61,16 +60,27 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-### list media processors
-print ("\n001 >>> Listing Media Processors")
-response = amspy.list_media_processor(access_token)
-if (response.status_code == 200):
-	resjson = response.json()
-	print("GET Status: " + str(response.status_code))
-	print("ID - NAME")
-	for mp in resjson['d']['results']:
-		print(str(mp['Id']) + " - " + str(mp['Name']))
-		mediaprocessor_id = str(mp['Id'])
-else:
-	print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
+#some global vars...
+SCALE_UNIT = "1"
 
+print ("\n001 >>> Scaling a Streaming Endpoint")
+# list and get the id of the default streaming endpoint
+response = amspy.list_streaming_endpoint(access_token)
+if (response.status_code == 200):
+        resjson = response.json()
+        for ea in resjson['d']['results']:
+                print("POST Status.............................: " + str(response.status_code))
+                print("Streaming Endpoint Id...................: " + ea['Id'])
+                print("Streaming Endpoint Name.................: " + ea['Name'])
+                print("Streaming Endpoint Description..........: " + ea['Description'])
+                if (ea['Name'] == 'default'):
+                        streaming_endpoint_id = ea['Id'];
+else:
+        print("POST Status.............................: " + str(response.status_code) + " - Streaming Endpoint Creation ERROR." + str(response.content))
+### scale the default streaming endpoint
+response = amspy.scale_streaming_endpoint(access_token, streaming_endpoint_id, SCALE_UNIT)
+if (response.status_code == 202):
+        print("POST Status.............................: " + str(response.status_code))
+        print("Streaming Endpoint SU Configured to.....: " + SCALE_UNIT)
+else:
+        print("GET Status.............................: " + str(response.status_code) + " - Streaming Endpoint Scaling ERROR." + str(response.content))
