@@ -82,9 +82,11 @@ else:
         print("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
         exit(1);
 
-### PRE-REQ We need to have a Content key to use for AES Encription
-# Hee you can download a sample to create it for you:
+### PRE-REQ We need to have a Content key to use for AES Encription and
+# at least 1 ("one") scale unit at the streaming endpoint (e.g.: default).
+# Here you can download a sample to create the Content Key for you:
 # https://github.com/msleal/create_ams_aeskey
+# The streaming endpoint will be scaled for you (to "1" scale unit).
 print ("000 >>> Checking the AES Content Key and Setting Streaming Endpoint Scale Unit")
 response = amspy.list_content_key(access_token)
 if (response.status_code == 200):
