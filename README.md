@@ -51,6 +51,8 @@ list_asset_accesspolicy(access_token, oid="") - list asset access policy
 list_sas_locator(access_token, oid="") - list sas locator(s)
 list_media_job(access_token, oid="") - list media job(s)
 list_asset_delivery_policy(access_token, oid="") - list media asset delivery policy(ies)
+list_streaming_endpoint(access_token, oid="") - list streaming endpoint(s)
+delete_streaming_endpoint(access_token, oid) - delete a streaming endpoint
 delete_asset_delivery_policy(access_token, oid) - delete media asset delivery policy
 delete_asset_accesspolicy(access_token, oid) - delete an asset acess policy
 delete_sas_locator(access_token, oid) - delete a sas locator
@@ -68,6 +70,8 @@ create_contentkey_authorization_policy(access_token, content) - create contenty 
 create_contentkey_authorization_policy_options(access_token, key_delivery_type="2", name="HLS Open Authorization Policy", key_restriction_type="0") - create content key authorization policy options
 create_ondemand_streaming_locator(access_token, encoded_asset_id, pid, starttime=None) - create on-demand streaming locator
 create_asset_accesspolicy(access_token, name, duration, permission="1") - create an asset access policy
+create_streaming_endpoint(access_token, name, description="New Streaming Endpoint", scale_units="1") - create a streaming endpoint
+scale_streaming_endpoint(access_token, streaming_endpoint_id, scale_units) - scale a streaming endpoint
 link_asset_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint) - link a content key with a media asset
 link_asset_delivery_policy(access_token, asset_id, adp_id, ams_redirected_rest_endpoint) - link asset to delivery policy
 link_contentkey_authorization_policy(access_token, ckap_id, options_id, ams_redirected_rest_endpoint) - link content key authorization policy

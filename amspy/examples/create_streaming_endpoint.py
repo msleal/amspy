@@ -7,7 +7,6 @@ import os
 import json
 import amspy
 import time
-#import pytz
 import logging
 import datetime
 
@@ -47,15 +46,14 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-### list assets
-print ("\n001 >>> Listing Media Assets")
-response = amspy.list_media_asset(access_token)
-if (response.status_code == 200):
+### create a streaming endpoint
+print ("\n001 >>> Creating a Streaming Endpoint")
+response = amspy.create_streaming_endpoint(access_token, "NewStreamingEndpoint", description="HLS Streaming Endpoint")
+if (response.status_code == 202):
 	resjson = response.json()
+	streamingendpoint_id = str(resjson['d']['Id'])
 	print("POST Status.............................: " + str(response.status_code))
-	for ma in resjson['d']['results']:
-		print("Media Asset Name........................: " + ma['Id'])
-		print("Media Asset Id..........................: " + ma['Name'])
+	print("Streaming Endpoint Id..........................: " + streamingendpoint_id)
 else:
-	print("POST Status.............................: " + str(response.status_code) + " - Media Asset Listing ERROR." + str(response.content))
+	print("POST Status.............................: " + str(response.status_code) + " - Streaming Endpoint Creation ERROR." + str(response.content))
 

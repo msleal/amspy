@@ -24,59 +24,71 @@ def get_access_token(accountname, accountkey):
 def get_url(access_token, endpoint=ams_rest_endpoint, flag=True):
     return do_get_url(endpoint, access_token, flag)
 
-# list_media_asset(access_token, oid)
+# list_media_asset(access_token, oid="")
 # list a media asset(s)
 def list_media_asset(access_token, oid=""):
     path = '/Assets'
     return helper_list(access_token, oid, path)
 
-# list_content_keys(access_token, oid)
+# list_content_keys(access_token, oid="")
 # list the content key(s)
 def list_content_key(access_token, oid=""):
     path = '/ContentKeys'
     return helper_list(access_token, oid, path)
 
-# list_contentkey_authorization_policy(access_token, oid)
+# list_contentkey_authorization_policy(access_token, oid="")
 # list content key authorization policy(ies)
 def list_contentkey_authorization_policy(access_token, oid=""):
     path = '/ContentKeyAuthorizationPolicies'
     return helper_list(access_token, oid, path)
 
-# list_contentkey_authorization_policy_options(access_token, oid)
+# list_contentkey_authorization_policy_options(access_token, oid="")
 # list content key authorization policy options
 def list_contentkey_authorization_policy_options(access_token, oid=""):
     path = '/ContentKeyAuthorizationPolicyOptions'
     return helper_list(access_token, oid, path)
 
-# list_media_processor(access_token, oid)
+# list_media_processor(access_token, oid="")
 # list the media processor(s)
 def list_media_processor(access_token, oid=""):
     path = '/MediaProcessors'
     return helper_list(access_token, oid, path)
 
-# list_asset_accesspolicy(access_token, oid)
+# list_asset_accesspolicy(access_token, oid="")
 # list a asset access policy(ies)
 def list_asset_accesspolicy(access_token, oid=""):
     path = '/AccessPolicies'
     return helper_list(access_token, oid, path)
 
-# list_sas_locator(access_token, oid)
+# list_sas_locator(access_token, oid="")
 # list a sas locator(s)
 def list_sas_locator(access_token, oid=""):
     path = '/Locators'
     return helper_list(access_token, oid, path)
 
-# list_media_job(access_token, oid)
+# list_media_job(access_token, oid="")
 # list a media job(s)
 def list_media_job(access_token, oid=""):
     path = '/Jobs'
     return helper_list(access_token, oid, path)
 
-# list_asset_delivery_policy(access_token, oid)
+# list_asset_delivery_policy(access_token, oid="")
 # list an asset delivery policy(ies)
 def list_asset_delivery_policy(access_token, oid=""):
     path = '/AssetDeliveryPolicies'
     return helper_list(access_token, oid, path)
+
+# list_streaming_endpoint(access_token, oid="")
+# list streaming endpoint(s)
+def list_streaming_endpoint(access_token, oid=""):
+    path = '/StreamingEndpoints'
+    return helper_list(access_token, oid, path)
+
+# delete_streaming_endpoint(access_token, oid)
+# delete a streaming endpoint
+def delete_streaming_endpoint(access_token, oid):
+    path = '/StreamingEndpoints'
+    return helper_delete(access_token, oid, path)
 
 # delete_asset_delivery_policy(access_token, oid)
 # delete a asset delivery policy
@@ -258,6 +270,38 @@ def create_asset_accesspolicy(access_token, name, duration, permission="1"):
 		"Permissions": "' + permission + '" \
 	}'
     return do_post(endpoint, path, body, access_token)
+
+# create_streaming_endpoint(access_token, name, options="0")
+# create a streaming endpoint
+def create_streaming_endpoint(access_token, name, description="New Streaming Endpoint", scale_units="1"):
+    path = '/StreamingEndpoints'
+    endpoint = ''.join([ams_rest_endpoint, path])
+    body = '{ \
+		"Id":null, \
+		"Name":"' + name + '", \
+		"Description":"' + description + '", \
+		"Created":"0001-01-01T00:00:00", \
+		"LastModified":"0001-01-01T00:00:00", \
+		"State":null, \
+		"HostName":null, \
+		"ScaleUnits":"' + scale_units + '", \
+		"CrossSiteAccessPolicies":{ \
+			"ClientAccessPolicy":"<access-policy><cross-domain-access><policy><allow-from http-request-headers=\\"*\\"><domain uri=\\"http://*\\" /></allow-from><grant-to><resource path=\\"/\\" include-subpaths=\\"false\\" /></grant-to></policy></cross-domain-access></access-policy>", \
+			"CrossDomainPolicy":"<?xml version=\\"1.0\\"?><!DOCTYPE cross-domain-policy SYSTEM \\"http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd\\"><cross-domain-policy><allow-access-from domain=\\"*\\" /></cross-domain-policy>" \
+		} \
+	}'
+    return do_post(endpoint, path, body, access_token)
+
+# scale_streaming_endpoint(access_token, streaming_endpoint_id, scale_units)
+# scale a scale unit
+def scale_streaming_endpoint(access_token, streaming_endpoint_id, scale_units):
+    path = '/StreamingEndpoints'
+    full_path = ''.join([path, "('", streaming_endpoint_id, "')", "/Scale"])
+    full_path_encoded = urllib.parse.quote(full_path, safe='')
+    endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
+
+    body = '{"scaleUnits": "' + str(scale_units) + '"}'
+    return do_post(endpoint, full_path_encoded, body, access_token)
 
 # link_asset_content_key(access_token, asset_id, encryptionkey_id)
 # link an asset with a content key

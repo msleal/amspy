@@ -11,6 +11,20 @@ import time
 import logging
 import datetime
 
+###########################################################################################
+##### DISCLAIMER ##### ##### DISCLAIMER ##### ##### DISCLAIMER ##### ##### DISCLAIMER #####
+###########################################################################################
+
+# ALL CODE IN THIS DIRECTOY (INCLUDING THIS FILE) ARE EXAMPLE CODES THAT  WILL  ACT ON YOUR 
+# AMS ACCOUNT.  IT ASSUMES THAT THE AMS ACCOUNT IS CLEAN (e.g.: BRAND NEW), WITH NO DATA OR 
+# PRODUCTION CODE ON IT.  DO NOT, AGAIN: DO NOT RUN ANY EXAMPLE CODE AGAINST PRODUCTION AMS
+# ACCOUNT!  IF YOU RUN ANY EXAMPLE CODE AGAINST YOUR PRODUCTION  AMS ACCOUNT,  YOU CAN LOSE 
+# DATA, AND/OR PUT YOUR AMS SERVICES IN A DEGRADED OR UNAVAILABLE STATE. BE WARNED!
+
+###########################################################################################
+##### DISCLAIMER ##### ##### DISCLAIMER ##### ##### DISCLAIMER ##### ##### DISCLAIMER #####
+###########################################################################################
+
 # Load Azure app defaults
 try:
 	with open('config.json') as configFile:
@@ -58,6 +72,7 @@ ISM_PATH = "assets/movie.ism"
 PROCESSOR_NAME = "Windows Azure Media Packager"
 AUTH_POLICY = '{"Name":"Open Authorization Policy"}'
 KEY_DELIVERY_TYPE = "2" # 1=PlayReady, 2=AES Envelope Encryption
+SCALE_UNIT = "1" # This will set the Scale Unit of the Streaming Unit to 1 (Each SU = 200mbs)
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
@@ -70,7 +85,7 @@ else:
 ### PRE-REQ We need to have a Content key to use for AES Encription
 # Hee you can download a sample to create it for you:
 # https://github.com/msleal/create_ams_aeskey
-print ("000 >>> Checking the AES Content Key")
+print ("000 >>> Checking the AES Content Key and Setting Streaming Endpoint Scale Unit")
 response = amspy.list_content_key(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
@@ -91,6 +106,29 @@ if (response.status_code == 200):
 		
 else:
 	print("GET Status.............................: " + str(response.status_code) + " - AES Content Key Listing ERROR." + str(response.content))
+	exit(1);
+
+# list and get the id of the default streaming endpoint
+response = amspy.list_streaming_endpoint(access_token)
+if (response.status_code == 200):
+	resjson = response.json()
+	for ea in resjson['d']['results']:
+		print("POST Status.............................: " + str(response.status_code))
+		print("Streaming Endpoint Id...................: " + ea['Id'])
+		print("Streaming Endpoint Name.................: " + ea['Name'])
+		print("Streaming Endpoint Description..........: " + ea['Description'])
+		if (ea['Name'] == 'default'):
+			streaming_endpoint_id = ea['Id'];
+else:
+        print("POST Status.............................: " + str(response.status_code) + " - Streaming Endpoint Creation ERROR." + str(response.content))
+
+# scale the default streaming endpoint
+response = amspy.scale_streaming_endpoint(access_token, streaming_endpoint_id, SCALE_UNIT)
+if (response.status_code == 202):
+	print("POST Status.............................: " + str(response.status_code))
+	print("Streaming Endpoint SU Configured to.....: " + SCALE_UNIT)
+else:
+	print("GET Status.............................: " + str(response.status_code) + " - Streaming Endpoint Scaling ERROR." + str(response.content))
 	exit(1);
 
 ######################### PHASE 1: UPLOAD and VALIDATE #########################
