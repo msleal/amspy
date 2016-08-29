@@ -18,8 +18,6 @@ except FileNotFoundError:
         print("ERROR: Expecting config.json in current folder")
         sys.exit()
 
-subscription_id = configData['subscriptionId']
-rg_name = configData['rgName']
 account_name = configData['accountName']
 account_key = configData['accountKey']
 
@@ -37,7 +35,7 @@ if (response.status_code == 200):
                 print("Media Asset Name........................: " + ma['Id'])
                 print("Media Asset Id..........................: " + ma['Name'])
 else:
-        print("GET Status: " + str(response.status_code) + " ERROR." + str(response.content))
+        print("GET Status: " + str(response.status_code) + " ERROR:" + str(response.content))
 ```
 
 ### AMSPy Library Functions:
