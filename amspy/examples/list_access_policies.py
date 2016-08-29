@@ -56,4 +56,4 @@ if (response.status_code == 200):
         for ap in resjson['d']['results']:
                 print("Asset Access Policie Id.........: " + str(ap['Id']))
 else:
-        print("GET Status: " + str(response.status_code) + " - Asset Access Policy List ERROR." + str(response.content))
+        print("GET Status: " + str(response.status_code) + " - Asset Access Policy Listing ERROR." + str(response.content))

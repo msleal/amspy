@@ -36,6 +36,18 @@ def list_content_key(access_token, oid=""):
     path = '/ContentKeys'
     return helper_list(access_token, oid, path)
 
+# list_contentkey_authorization_policy(access_token, oid)
+# list content key authorization policy(ies)
+def list_contentkey_authorization_policy(access_token, oid=""):
+    path = '/ContentKeyAuthorizationPolicies'
+    return helper_list(access_token, oid, path)
+
+# list_contentkey_authorization_policy_options(access_token, oid)
+# list content key authorization policy options
+def list_contentkey_authorization_policy_options(access_token, oid=""):
+    path = '/ContentKeyAuthorizationPolicyOptions'
+    return helper_list(access_token, oid, path)
+
 # list_media_processor(access_token, oid)
 # list the media processor(s)
 def list_media_processor(access_token, oid=""):
@@ -60,6 +72,18 @@ def list_media_job(access_token, oid=""):
     path = '/Jobs'
     return helper_list(access_token, oid, path)
 
+# list_asset_delivery_policy(access_token, oid)
+# list an asset delivery policy(ies)
+def list_asset_delivery_policy(access_token, oid=""):
+    path = '/AssetDeliveryPolicies'
+    return helper_list(access_token, oid, path)
+
+# delete_asset_delivery_policy(access_token, oid)
+# delete a asset delivery policy
+def delete_asset_delivery_policy(access_token, oid):
+    path = '/AssetDeliveryPolicies'
+    return helper_delete(access_token, oid, path)
+
 # delete_asset_accesspolicy(access_token, oid)
 # delete a asset access policy
 def delete_asset_accesspolicy(access_token, oid):
@@ -76,6 +100,18 @@ def delete_sas_locator(access_token, oid):
 # delete a content key
 def delete_content_key(access_token, oid):
     path = '/ContentKeys'
+    return helper_delete(access_token, oid, path)
+
+# delete_contentkey_authorization_policy(access_token, oid)
+# delete a content key authorization policy
+def delete_contentkey_authorization_policy(access_token, oid):
+    path = '/ContentKeyAuthorizationPolicies'
+    return helper_delete(access_token, oid, path)
+
+# delete_contentkey_authorization_policy_options(access_token, oid)
+# delete content key authorization policy options
+def delete_contentkey_authorization_policy_options(access_token, oid):
+    path = '/ContentKeyAuthorizationPolicyOptions'
     return helper_delete(access_token, oid, path)
 
 # delete_media_asset(access_token, oid)
@@ -211,6 +247,18 @@ def create_ondemand_streaming_locator(access_token, encoded_asset_id, pid, start
 		}' 
     return do_post(endpoint, path, body, access_token, "json_only")
 
+# create_asset_accesspolicy(access_token, duration)
+# create an asset access policy
+def create_asset_accesspolicy(access_token, name, duration, permission="1"):
+    path = '/AccessPolicies'
+    endpoint = ''.join([ams_rest_endpoint, path])
+    body = '{ \
+		"Name": "' + str(name) + '", \
+		"DurationInMinutes": "' + duration + '", \
+		"Permissions": "' + permission + '" \
+	}'
+    return do_post(endpoint, path, body, access_token)
+
 # link_asset_content_key(access_token, asset_id, encryptionkey_id)
 # link an asset with a content key
 def link_asset_content_key(access_token, asset_id, encryptionkey_id, ams_redirected_rest_endpoint):
@@ -269,18 +317,6 @@ def update_media_assetfile(access_token, parent_asset_id, asset_id, content_leng
 		"ParentAssetId": "' + parent_asset_id + '" \
 	}'
     return do_patch(endpoint, full_path_encoded, body, access_token)
-
-# create_asset_accesspolicy(access_token, duration)
-# create an asset access policy
-def create_asset_accesspolicy(access_token, name, duration, permission="1"):
-    path = '/AccessPolicies'
-    endpoint = ''.join([ams_rest_endpoint, path])
-    body = '{ \
-		"Name": "' + str(name) + '", \
-		"DurationInMinutes": "' + duration + '", \
-		"Permissions": "' + permission + '" \
-	}'
-    return do_post(endpoint, path, body, access_token)
 
 # get_delivery_url(access_token, ck_id, key_type)
 # get a delivery url
@@ -347,11 +383,6 @@ def retrieve_url_content(url):
 
 ### Exceptions...
 # These, I think, should not be here... ;-)
-# upload_block_blob(access_token, endpoint, content, content_length)
-# upload a block blob
-def upload_block_blob(access_token, endpoint, content, content_length):
-    return do_sto_put(endpoint, content, content_length, access_token)
-
 # validate_mp4_asset(access_token, processor_id, asset_id, output_assetname)
 # validate a mp4 asset
 def validate_mp4_asset(access_token, processor_id, asset_id, output_assetname):
@@ -377,4 +408,9 @@ def validate_mp4_asset(access_token, processor_id, asset_id, output_assetname):
 	}'
 
     return do_post(endpoint, path, body, access_token)
+
+# upload_block_blob(access_token, endpoint, content, content_length)
+# upload a block blob
+def upload_block_blob(access_token, endpoint, content, content_length):
+    return do_sto_put(endpoint, content, content_length, access_token)
 

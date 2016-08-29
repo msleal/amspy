@@ -6,13 +6,19 @@ get_access_token(accountname, accountkey) - get the access token/authenticate
 get_url(access_token, endpoint=ams_rest_endpoint, flag=True) - get a specific url
 list_media_asset(access_token, oid="") - list media asset(s)
 list_content_key(access_token, oid="") - list content key(s)
+list_contentkey_authorization_policy(access_token, oid="") - list content key authorization policy(ies)
+list_contentkey_authorization_policy_options(access_token, oid="") - list content key authorization policy options
 list_media_processor(access_token, oid="") - list media processor(s)
 list_asset_accesspolicy(access_token, oid="") - list asset access policy
 list_sas_locator(access_token, oid="") - list sas locator(s)
 list_media_job(access_token, oid="") - list media job(s)
+list_asset_delivery_policy(access_token, oid="") - list media asset delivery policy(ies)
+delete_asset_delivery_policy(access_token, oid) - delete media asset delivery policy
 delete_asset_accesspolicy(access_token, oid) - delete an asset acess policy
 delete_sas_locator(access_token, oid) - delete a sas locator
 delete_content_key(access_token, oid) - delete an asset acess policy
+delete_contentkey_authorization_policy(access_token, oid) - delete content key authorization policy
+delete_contentkey_authorization_policy_options(access_token, oid) - delete content key authorization policy options
 delete_media_asset(access_token, oid) - delete an asset
 create_media_asset(access_token, name, options="0") - create a media asset
 create_media_assetfile(access_token, parent_asset_id, name, is_primary="false", is_encrypted="false", encryption_scheme="None", encryptionkey_id="None") - create a media assetfile

@@ -47,18 +47,14 @@ print ("\n-----------------------= AMS Py =----------------------");
 print ("Simple Python Library for Azure Media Services REST API");
 print ("-------------------------------------------------------\n");
 
-#Some global vars...
-name = "testasset"
-
-### create an asset
-print ("\n001 >>> Listing a Media Asset")
-response = amspy.list_media_asset(access_token)
+### list contentkey authorization policies
+print ("\n001 >>> Listing Content Key Authorization Policies")
+response = amspy.list_contentkey_authorization_policy(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
-	print("POST Status.............................: " + str(response.status_code))
-	for ma in resjson['d']['results']:
-		print("Media Asset Name........................: " + ma['Id'])
-		print("Media Asset Id..........................: " + ma['Name'])
+	print("GET Status......................: " + str(response.status_code))
+	for ap in resjson['d']['results']:
+		print("Content key Authorization Policy Id.........: " + str(ap['Id']))
+		print("Content key Authorization Policy Name.......: " + str(ap['Name']))
 else:
-	print("POST Status.............................: " + str(response.status_code) + " - Media Asset Listing ERROR." + str(response.content))
-
+	print("GET Status: " + str(response.status_code) + " - Content Key Authorization Policy Listing ERROR." + str(response.content))
