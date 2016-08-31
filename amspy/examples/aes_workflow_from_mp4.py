@@ -33,15 +33,11 @@ except FileNotFoundError:
 	print("ERROR: Expecting config.json in current folder")
 	sys.exit()
 
-subscription_id = configData['subscriptionId']
-rg_name = configData['rgName']
 account_name = configData['accountName']
 account_key = configData['accountKey']
 log_name = configData['logName']
 log_level = configData['logLevel']
 purge_log = configData['purgeLog']
-time_zone = configData['timeZone']
-region = configData['region']
 
 #Initialization...
 print ("\n-----------------------= AMS Py =----------------------");

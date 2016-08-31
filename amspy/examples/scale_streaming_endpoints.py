@@ -32,23 +32,8 @@ except FileNotFoundError:
 	print("ERROR: Expecting config.json in current folder")
 	sys.exit()
 
-subscription_id = configData['subscriptionId']
-rg_name = configData['rgName']
 account_name = configData['accountName']
 account_key = configData['accountKey']
-log_name = configData['logName']
-log_level = configData['logLevel']
-purge_log = configData['purgeLog']
-time_zone = configData['timeZone']
-region = configData['region']
-
-#Remove old log file if requested (default behavior)...
-if (purge_log.lower() == "yes"):
-        if (os.path.isfile(log_name)):
-                os.remove(log_name);
-
-#Basic Logging...
-logging.basicConfig(format='%(asctime)s - %(levelname)s:%(message)s', level=log_level, filename=log_name)
 
 # Get the access token...
 response = amspy.get_access_token(account_name, account_key)

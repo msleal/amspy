@@ -1,7 +1,7 @@
 # Application files
 amspy/examples/config.json
 # Log...
-amspy/examples/log/example.log
+amspy/examples/log/aes_workflow.log
 # Python cache...
 __pycache__/
 # PyPI
