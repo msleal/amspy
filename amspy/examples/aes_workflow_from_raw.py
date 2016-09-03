@@ -74,7 +74,7 @@ PROCESSOR_NAME = "Media Encoder Standard"
 AUTH_POLICY = '{"Name":"Open Authorization Policy"}'
 KEY_DELIVERY_TYPE = "2" # 1=PlayReady, 2=AES Envelope Encryption
 SCALE_UNIT = "1" # This will set the Scale Unit of the Streaming Unit to 1 (Each SU = 200mbs)
-JSON_ENCODE_PROFILE_PATH = "assets/h264_multiple_bitrate_720p_profile.json"
+JSON_ENCODE_PROFILE_PATH = "presets/h264_multiple_bitrate_720p_profile.json"
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
