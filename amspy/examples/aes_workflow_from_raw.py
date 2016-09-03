@@ -295,9 +295,8 @@ else:
 
 ## create a media encoding job
 print ("\n016 >>> Creating a Media Job to encode the mezzanine")
-with open(JSON_ENCODE_PROFILE_PATH, mode='rb') as file:
+with open(JSON_ENCODE_PROFILE_PATH, mode='r') as file:
         profile_content = file.read()
-        profile_content_length = len(video_content)
 
 response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, profile_content)
 if (response.status_code == 201):
