@@ -66,15 +66,15 @@ access_token = resjson["access_token"]
 NAME = "movie"
 ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, EnvelopeEncryptionProtected=4
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
-VIDEO_NAME = "movie.mp4"
 ISM_NAME = "movie.ism"
+VIDEO_NAME = "movie.mp4"
 VIDEO_PATH = "assets/movie.mp4"
-ISM_PATH = "assets/movie.ism"
 ASSET_FINAL_NAME = "mp4encoded"
-PROCESSOR_NAME = "Windows Azure Media Packager"
+PROCESSOR_NAME = "Media Encoder Standard"
 AUTH_POLICY = '{"Name":"Open Authorization Policy"}'
 KEY_DELIVERY_TYPE = "2" # 1=PlayReady, 2=AES Envelope Encryption
 SCALE_UNIT = "1" # This will set the Scale Unit of the Streaming Unit to 1 (Each SU = 200mbs)
+JSON_ENCODE_PROFILE_PATH = "assets/h264_multiple_bitrate_720p_profile.json"
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
@@ -177,19 +177,6 @@ if (response.status_code == 201):
 else:
 	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + VIDEO_NAME + "' Creation ERROR." + str(response.content))
 
-### create an assetfile
-print ("\n004 >>> Creating a Media Assetfile (for the manifest file)")
-response = amspy.create_media_assetfile(access_token, asset_id, ISM_NAME, "true", "false")
-if (response.status_code == 201):
-	resjson = response.json()
-	ism_assetfile_id = str(resjson['d']['Id']);
-	print("POST Status.............................: " + str(response.status_code))
-	print("Media Assetfile Name....................: " + str(resjson['d']['Name']))
-	print("Media Assetfile Id......................: " + ism_assetfile_id)
-	print("Media Assetfile IsPrimary...............: " + str(resjson['d']['IsPrimary']))
-else:
-	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + ISM_NAME + "' Creation ERROR." + str(response.content))
-
 ### create an asset access policy
 print ("\n005 >>> Creating an Asset Access Policy")
 duration = "440"
@@ -265,20 +252,6 @@ block_blob_service.create_blob_from_path(
 		content_settings=ContentSettings(content_type='video/mp4')
 	)
 
-### upload the manifest file
-print ("\n010 >>> Uploading the Manifest File")
-with open(ISM_PATH, mode='rb') as file:
-        ism_content = file.read()
-        ism_content_length = len(video_content)
-
-block_blob_service.create_blob_from_path(
-		sto_asset_name,
-		ISM_NAME,
-		ISM_PATH,
-		max_connections=5,
-		content_settings=ContentSettings(content_type='application/octet-stream')		
-	)
-
 ### update the assetfile
 print ("\n011 >>> Updating the Video Assetfile")
 response = amspy.update_media_assetfile(access_token, asset_id, video_assetfile_id, video_content_length, VIDEO_NAME)
@@ -287,15 +260,6 @@ if (response.status_code == 204):
 	print("Assetfile Content Length Updated........: " + str(video_content_length))
 else:
 	print("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + VIDEO_NAME + "' Update ERROR." + str(response.content))
-
-### update the assetfile
-print ("\n012 >>> Updating the Manifest Assetfile")
-response = amspy.update_media_assetfile(access_token, asset_id, ism_assetfile_id, ism_content_length, ISM_NAME)
-if (response.status_code == 204):
-	print("MERGE Status............................: " + str(response.status_code))
-	print("Assetfile Content Length Updated........: " + str(ism_content_length))
-else:
-	print("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + ISM_NAME + "' Update ERROR." + str(response.content))
 
 ### delete the locator
 print ("\n013 >>> Deleting the Locator")
@@ -331,7 +295,11 @@ else:
 
 ## create a media encoding job
 print ("\n016 >>> Creating a Media Job to encode the mezzanine")
-response = amspy.validate_mp4_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME)
+with open(JSON_ENCODE_PROFILE_PATH, mode='rb') as file:
+        profile_content = file.read()
+        profile_content_length = len(video_content)
+
+response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, profile_content)
 if (response.status_code == 201):
 	resjson = response.json()
 	job_id = str(resjson['d']['Id']);

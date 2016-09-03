@@ -16,4 +16,4 @@ from .amsrest import get_access_token, create_media_asset, list_media_asset, cre
 	link_asset_delivery_policy, create_ondemand_streaming_locator, list_contentkey_authorization_policy, \
 	list_contentkey_authorization_policy_options, list_streaming_endpoint, delete_contentkey_authorization_policy, \
 	delete_contentkey_authorization_policy_options, list_asset_delivery_policy, delete_asset_delivery_policy, \
-	create_streaming_endpoint, scale_streaming_endpoint, delete_streaming_endpoint
+	create_streaming_endpoint, scale_streaming_endpoint, delete_streaming_endpoint, encode_mezzanine_asset

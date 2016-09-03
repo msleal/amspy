@@ -10,6 +10,9 @@ import time
 #import pytz
 import logging
 import datetime
+from azure import *
+from azure.storage.blob import BlockBlobService
+from azure.storage.blob import ContentSettings
 
 ###########################################################################################
 ##### DISCLAIMER ##### ##### DISCLAIMER ##### ##### DISCLAIMER ##### ##### DISCLAIMER #####
@@ -35,6 +38,7 @@ except FileNotFoundError:
 
 account_name = configData['accountName']
 account_key = configData['accountKey']
+sto_account_name = configData['sto_accountName']
 log_name = configData['logName']
 log_level = configData['logLevel']
 purge_log = configData['purgeLog']
@@ -221,6 +225,7 @@ if (response.status_code == 201):
 	resjson = response.json()
 	saslocator_id = str(resjson['d']['Id']);
 	saslocator_baseuri = str(resjson['d']['BaseUri']);
+	sto_asset_name = os.path.basename(os.path.normpath(saslocator_baseuri))
 	saslocator_cac = str(resjson['d']['ContentAccessComponent']);
 	print("POST Status.............................: " + str(response.status_code))
 	print("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
@@ -241,33 +246,36 @@ if (response.status_code == 200):
 else:
 	print("GET Status..............................: " + str(response.status_code) + " - SAS Locator List ERROR." + str(response.content))
 
+### Uploads
+block_blob_service = BlockBlobService(account_name=sto_account_name, sas_token=saslocator_cac[1:])
+
 ### upload the video file
 print ("\n009 >>> Uploading the Video File")
-saslocator_video_url = ''.join([saslocator_baseuri, '/', VIDEO_NAME, saslocator_cac])
 with open(VIDEO_PATH, mode='rb') as file:
 	video_content = file.read()
 	video_content_length = len(video_content)
-response = amspy.upload_block_blob(access_token, saslocator_video_url, video_content, video_content_length)
-if (response.status_code == 201):
-	print("POST Status.............................: " + str(response.status_code))
-	#print("SAS Complete Upload URL.........: " + saslocator_video_url)
-	print("Video File Uploaded.....................: OK")
-else:
-	print("POST Status.............................: " + str(response.status_code) + " - Video File: '" + VIDEO_NAME + "' Upload ERROR." + str(response.content))
+
+block_blob_service.create_blob_from_path(
+                sto_asset_name,
+                VIDEO_NAME,
+                VIDEO_PATH,
+                max_connections=5,
+                content_settings=ContentSettings(content_type='video/mp4')
+        )
 
 ### upload the manifest file
 print ("\n010 >>> Uploading the Manifest File")
-saslocator_ism_url = ''.join([saslocator_baseuri, '/', ISM_NAME, saslocator_cac])
 with open(ISM_PATH, mode='rb') as file:
 	ism_content = file.read()
 	ism_content_length = len(ism_content)
-response = amspy.upload_block_blob(access_token, saslocator_ism_url, ism_content, ism_content_length)
-if (response.status_code == 201):
-	print("POST Status.............................: " + str(response.status_code))
-	#print("SAS Complete Upload URL.................: " + saslocator_ism_url)
-	print("Manifest File Uploaded..................: OK")
-else:
-	print("POST Status: " + str(response.status_code) + " - Video File: '" + ISM_NAME + "' Upload ERROR." + str(response.content))
+
+block_blob_service.create_blob_from_path(
+                sto_asset_name,
+                ISM_NAME,
+                ISM_PATH,
+                max_connections=5,
+                content_settings=ContentSettings(content_type='application/octet-stream')
+        )
 
 ### update the assetfile
 print ("\n011 >>> Updating the Video Assetfile")
