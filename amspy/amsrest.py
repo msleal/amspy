@@ -378,10 +378,6 @@ def encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetnam
     path = '/Jobs'
     endpoint = ''.join([ams_rest_endpoint, path])
 
-    assets_path = ''.join(["/Assets", "('", asset_id, "')"])
-    assets_path_encoded = urllib.parse.quote(assets_path, safe='')
-    endpoint_assets = ''.join([ams_rest_endpoint, assets_path_encoded])
-
     body = json_profile
 
     return do_post(endpoint, path, body, access_token)
