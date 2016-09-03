@@ -249,7 +249,7 @@ else:
 	print("GET Status..............................: " + str(response.status_code) + " - SAS Locator List ERROR." + str(response.content))
 
 ### Uploads
-block_blob_service = BlockBlobService(account_name=sto_account_name, sas_token=urllib.parse.quote(saslocator_cac[1:], safe=''))
+block_blob_service = BlockBlobService(account_name=sto_account_name, sas_token=saslocator_cac[1:])
 
 ### upload the video file
 print ("\n009 >>> Uploading the Video File")
@@ -329,8 +329,8 @@ if (response.status_code == 200):
 else:
         print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
-## create a media validation job
-print ("\n016 >>> Creating a Media Job to validate the mp4")
+## create a media encoding job
+print ("\n016 >>> Creating a Media Job to encode the mezzanine")
 response = amspy.validate_mp4_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME)
 if (response.status_code == 201):
 	resjson = response.json()

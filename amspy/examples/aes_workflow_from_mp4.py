@@ -107,6 +107,7 @@ else:
 	exit(1);
 
 # list and get the id of the default streaming endpoint
+print("")
 response = amspy.list_streaming_endpoint(access_token)
 if (response.status_code == 200):
 	resjson = response.json()
@@ -121,6 +122,7 @@ else:
         print("POST Status.............................: " + str(response.status_code) + " - Streaming Endpoint Creation ERROR." + str(response.content))
 
 # scale the default streaming endpoint
+print("")
 response = amspy.scale_streaming_endpoint(access_token, streaming_endpoint_id, SCALE_UNIT)
 if (response.status_code == 202):
 	print("POST Status.............................: " + str(response.status_code))
