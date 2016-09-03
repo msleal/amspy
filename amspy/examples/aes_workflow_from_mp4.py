@@ -255,13 +255,16 @@ with open(VIDEO_PATH, mode='rb') as file:
 	video_content = file.read()
 	video_content_length = len(video_content)
 
-block_blob_service.create_blob_from_path(
+response = block_blob_service.create_blob_from_path(
                 sto_asset_name,
                 VIDEO_NAME,
                 VIDEO_PATH,
                 max_connections=5,
                 content_settings=ContentSettings(content_type='video/mp4')
         )
+if (response == None):
+	print("PUT Status..............................: 201")
+	print("Video File Uploaded.....................: OK")
 
 ### upload the manifest file
 print ("\n010 >>> Uploading the Manifest File")
@@ -269,13 +272,16 @@ with open(ISM_PATH, mode='rb') as file:
 	ism_content = file.read()
 	ism_content_length = len(ism_content)
 
-block_blob_service.create_blob_from_path(
+response = block_blob_service.create_blob_from_path(
                 sto_asset_name,
                 ISM_NAME,
                 ISM_PATH,
                 max_connections=5,
                 content_settings=ContentSettings(content_type='application/octet-stream')
         )
+if (response == None):
+	print("PUT Status..............................: 201")
+	print("Manifest File Uploaded..................: OK")
 
 ### update the assetfile
 print ("\n011 >>> Updating the Video Assetfile")

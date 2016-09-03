@@ -198,7 +198,6 @@ def create_asset_delivery_policy(access_token, ams_account):
 def create_media_task(access_token, processor_id, asset_id, content):
     path = '/Tasks'
     endpoint = ''.join([ams_rest_endpoint, path])
-
     body = content
     return do_post(endpoint, path, body, access_token)
 
@@ -207,7 +206,6 @@ def create_media_task(access_token, processor_id, asset_id, content):
 def create_media_job(access_token, processor_id, asset_id, content):
     path = '/Jobs'
     endpoint = ''.join([ams_rest_endpoint, path])
-
     body = content
     return do_post(endpoint, path, body, access_token)
 
@@ -216,7 +214,6 @@ def create_media_job(access_token, processor_id, asset_id, content):
 def create_contentkey_authorization_policy(access_token, content):
     path = '/ContentKeyAuthorizationPolicies'
     endpoint = ''.join([ams_rest_endpoint, path])
-
     body = content
     return do_post(endpoint, path, body, access_token)
 
@@ -225,7 +222,6 @@ def create_contentkey_authorization_policy(access_token, content):
 def create_contentkey_authorization_policy_options(access_token, key_delivery_type="2", name="HLS Open Authorization Policy", key_restriction_type="0"):
     path = '/ContentKeyAuthorizationPolicyOptions'
     endpoint = ''.join([ams_rest_endpoint, path])
-
     body = '{ \
 		"Name":"policy",\
 		"KeyDeliveryType":2, \
@@ -243,7 +239,6 @@ def create_contentkey_authorization_policy_options(access_token, key_delivery_ty
 def create_ondemand_streaming_locator(access_token, encoded_asset_id, pid, starttime=None):
     path = '/Locators'
     endpoint = ''.join([ams_rest_endpoint, path])
-
     if(starttime == None):
     	body = '{ \
 			"AccessPolicyId":"' + pid + '", \
@@ -299,7 +294,6 @@ def scale_streaming_endpoint(access_token, streaming_endpoint_id, scale_units):
     full_path = ''.join([path, "('", streaming_endpoint_id, "')", "/Scale"])
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
-
     body = '{"scaleUnits": "' + str(scale_units) + '"}'
     return do_post(endpoint, full_path_encoded, body, access_token)
 
@@ -311,7 +305,6 @@ def link_asset_content_key(access_token, asset_id, encryptionkey_id, ams_redirec
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
     uri = ''.join([ams_redirected_rest_endpoint, 'ContentKeys', "('", encryptionkey_id, "')"])
-
     body = '{"uri": "' + uri + '"}'
     return do_post(endpoint, full_path_encoded, body, access_token)
 
@@ -323,7 +316,6 @@ def link_asset_delivery_policy(access_token, asset_id, adp_id, ams_redirected_re
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
     uri = ''.join([ams_redirected_rest_endpoint, 'AssetDeliveryPolicies', "('", adp_id, "')"])
-
     body = '{"uri": "' + uri + '"}'
     return do_post(endpoint, full_path_encoded, body, access_token)
 
@@ -335,7 +327,6 @@ def link_contentkey_authorization_policy(access_token, ckap_id, options_id, ams_
     full_path_encoded = urllib.parse.quote(full_path, safe='')
     endpoint = ''.join([ams_rest_endpoint, full_path_encoded])
     uri = ''.join([ams_redirected_rest_endpoint, 'ContentKeyAuthorizationPolicyOptions', "('", options_id, "')"])
-
     body = '{"uri": "' + uri + '"}'
     return do_post(endpoint, full_path_encoded, body, access_token, "json_only", "1.0;NetFx")
 
@@ -368,7 +359,6 @@ def get_delivery_url(access_token, ck_id, key_type):
     path = '/ContentKeys'
     full_path = ''.join([path, "('", ck_id, "')", "/GetKeyDeliveryUrl"])
     endpoint = ''.join([ams_rest_endpoint, full_path])
-
     body = '{"keyDeliveryType": "' + key_type + '"}'
     return do_post(endpoint, full_path, body, access_token)
 
@@ -377,9 +367,30 @@ def get_delivery_url(access_token, ck_id, key_type):
 def encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetname, json_profile):
     path = '/Jobs'
     endpoint = ''.join([ams_rest_endpoint, path])
-
     body = json_profile
+    return do_post(endpoint, path, body, access_token)
 
+# validate_mp4_asset(access_token, processor_id, asset_id, output_assetname)
+# validate a mp4 asset
+def validate_mp4_asset(access_token, processor_id, asset_id, output_assetname):
+    path = '/Jobs'
+    endpoint = ''.join([ams_rest_endpoint, path])
+    assets_path = ''.join(["/Assets", "('", asset_id, "')"])
+    assets_path_encoded = urllib.parse.quote(assets_path, safe='')
+    endpoint_assets = ''.join([ams_rest_endpoint, assets_path_encoded])
+    body = '{ \
+    		"Name":"ValidateEncodedMP4", \
+   		"InputMediaAssets":[{ \
+       	  		"__metadata":{ \
+       	     			"uri":"' + endpoint_assets + '" \
+       	  		} \
+     	 	}], \
+   		"Tasks":[{ \
+       	  		"Configuration":"<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><taskDefinition xmlns=\\"http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#\\"><name>MP4 Preprocessor</name><id>859515BF-9BA3-4BDD-A3B6-400CEF07F870</id><description xml:lang=\\"en\\" /><inputFolder /><properties namespace=\\"http://schemas.microsoft.com/iis/media/V4/TM/MP4Preprocessor#\\" prefix=\\"mp4p\\"><property name=\\"SmoothRequired\\" value=\\"false\\" /><property name=\\"HLSRequired\\" value=\\"true\\" /></properties><taskCode><type>Microsoft.Web.Media.TransformManager.MP4PreProcessor.MP4Preprocessor_Task, Microsoft.Web.Media.TransformManager.MP4Preprocessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35</type></taskCode></taskDefinition>", \
+       	  		"MediaProcessorId":"' + processor_id + '", \
+       	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"0\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
+      		}] \
+	}'
     return do_post(endpoint, path, body, access_token)
 
 ### Helpers...
@@ -437,34 +448,7 @@ def retrieve_url_content(url):
 
 ### Exceptions...
 # These, I think, should not be here... ;-)
-# validate_mp4_asset(access_token, processor_id, asset_id, output_assetname)
-# validate a mp4 asset
-def validate_mp4_asset(access_token, processor_id, asset_id, output_assetname):
-    path = '/Jobs'
-    endpoint = ''.join([ams_rest_endpoint, path])
-
-    assets_path = ''.join(["/Assets", "('", asset_id, "')"])
-    assets_path_encoded = urllib.parse.quote(assets_path, safe='')
-    endpoint_assets = ''.join([ams_rest_endpoint, assets_path_encoded])
-
-    body = '{ \
-    		"Name":"ValidateEncodedMP4", \
-   		"InputMediaAssets":[{ \
-       	  		"__metadata":{ \
-       	     			"uri":"' + endpoint_assets + '" \
-       	  		} \
-     	 	}], \
-   		"Tasks":[{ \
-       	  		"Configuration":"<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><taskDefinition xmlns=\\"http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#\\"><name>MP4 Preprocessor</name><id>859515BF-9BA3-4BDD-A3B6-400CEF07F870</id><description xml:lang=\\"en\\" /><inputFolder /><properties namespace=\\"http://schemas.microsoft.com/iis/media/V4/TM/MP4Preprocessor#\\" prefix=\\"mp4p\\"><property name=\\"SmoothRequired\\" value=\\"false\\" /><property name=\\"HLSRequired\\" value=\\"true\\" /></properties><taskCode><type>Microsoft.Web.Media.TransformManager.MP4PreProcessor.MP4Preprocessor_Task, Microsoft.Web.Media.TransformManager.MP4Preprocessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35</type></taskCode></taskDefinition>", \
-       	  		"MediaProcessorId":"' + processor_id + '", \
-       	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"0\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
-      		}] \
-	}'
-
-    return do_post(endpoint, path, body, access_token)
-
 # upload_block_blob(access_token, endpoint, content, content_length)
 # upload a block blob
 def upload_block_blob(access_token, endpoint, content, content_length):
     return do_sto_put(endpoint, content, content_length, access_token)
-
