@@ -121,7 +121,7 @@ if (response.status_code == 200):
 		print("POST Status.............................: " + str(response.status_code))
 		print("Streaming Endpoint Id...................: " + ea['Id'])
 		print("Streaming Endpoint Name.................: " + ea['Name'])
-		print("Streaming Endpoint Description..........: " + ea['Description'])
+		#print("Streaming Endpoint Description..........: " + ea['Description'])
 		if (ea['Name'] == 'default'):
 			streaming_endpoint_id = ea['Id'];
 else:
@@ -244,7 +244,7 @@ with open(VIDEO_PATH, mode='rb') as file:
         video_content = file.read()
         video_content_length = len(video_content)
 
-block_blob_service.create_blob_from_path(
+response = block_blob_service.create_blob_from_path(
 		sto_asset_name,
 		VIDEO_NAME,
 		VIDEO_PATH,

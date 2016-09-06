@@ -378,9 +378,9 @@ def encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetnam
        	  		} \
      	 	}], \
    		"Tasks":[{ \
-       	  		"Configuration":"Encode MP4", \
+       	  		"Configuration":' + json_profile + ', \
        	  		"MediaProcessorId":"' + processor_id + '", \
-       	  		"TaskBody":"' + json_profile + '" \
+       	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"0\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
       		}] \
 	}'
     return do_post(endpoint, path, body, access_token)
