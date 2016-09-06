@@ -15,15 +15,12 @@ You need to add your credentials and provide informaton about your AMS environme
 file (config.json). Here is a description of each option:
 ```
 {
-   "subscriptionId": "<here-you-add-your-azure-subscription-id>",
-   "rgName": "<here-you-your-resource-group-name>",
    "accountName": "<here-you-add-your-media-services-account-name>",
    "accountKey": "<here-you-add-your-media-services-account-secret-key>",
+   "sto_accountName": "<your-storage-account-name>",
    "logName": "<here-you-choose-the-name-of-your-log-file>",
    "logLevel": "DEBUG",
    "purgeLog": "Yes",
-   "timeZone": "<here-you-add-your-time-zone>",
-   "region": "<here-you-specify-the-region-where-you-want-your-ams-deployed>"
 }
 ```
 
