@@ -367,7 +367,22 @@ def get_delivery_url(access_token, ck_id, key_type):
 def encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetname, json_profile):
     path = '/Jobs'
     endpoint = ''.join([ams_rest_endpoint, path])
-    body = json_profile
+    assets_path = ''.join(["/Assets", "('", asset_id, "')"])
+    assets_path_encoded = urllib.parse.quote(assets_path, safe='')
+    endpoint_assets = ''.join([ams_rest_endpoint, assets_path_encoded])
+    body = '{ \
+    		"Name":"EncodeMezzanine", \
+   		"InputMediaAssets":[{ \
+       	  		"__metadata":{ \
+       	     			"uri":"' + endpoint_assets + '" \
+       	  		} \
+     	 	}], \
+   		"Tasks":[{ \
+       	  		"Configuration":"' + json_profile + '", \
+       	  		"MediaProcessorId":"' + processor_id + '", \
+       	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"0\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
+      		}] \
+	}'
     return do_post(endpoint, path, body, access_token)
 
 # validate_mp4_asset(access_token, processor_id, asset_id, output_assetname)
