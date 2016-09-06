@@ -378,7 +378,7 @@ def encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetnam
        	  		} \
      	 	}], \
    		"Tasks":[{ \
-       	  		"Configuration":' + json_profile + ', \
+       	  		"Configuration":\'' + json_profile + '\', \
        	  		"MediaProcessorId":"' + processor_id + '", \
        	  		"TaskBody":"<?xml version=\\"1.0\\" encoding=\\"utf-16\\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions=\\"0\\" assetName=\\"' + output_assetname + '\\">JobOutputAsset(0)</outputAsset></taskBody>" \
       		}] \
