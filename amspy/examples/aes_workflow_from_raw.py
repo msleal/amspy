@@ -459,4 +459,4 @@ if (amspy.translate_job_state(job_state) == 'Finished'):
 	else:
 		print("GET Status..............................: " + str(response.status_code) + " - OnDemand Streaming Locator Creating ERROR." + str(response.content))
 else:
-	print ("\n Something went wrong... we could not validate the MP4 Asset!")
+	print ("\n Something went wrong... we could not encode the Mezzanine Asset!")
