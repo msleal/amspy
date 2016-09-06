@@ -251,6 +251,9 @@ block_blob_service.create_blob_from_path(
 		max_connections=5,
 		content_settings=ContentSettings(content_type='video/mp4')
 	)
+if (response == None):
+        print("PUT Status..............................: 201")
+        print("Video File Uploaded.....................: OK")
 
 ### update the assetfile
 print ("\n011 >>> Updating the Video Assetfile")
