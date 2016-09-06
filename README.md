@@ -78,7 +78,10 @@ link_contentkey_authorization_policy(access_token, ckap_id, options_id, ams_redi
 add_authorization_policy(access_token, ck_id, oid) - add authorization policy to key
 update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, name) - update assetfile content length
 get_delivery_url(access_token, ck_id, key_type) - get the key delivery url
+encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetname, json_profile) - encode a mezzanine (raw video) file into multi-bitrate MP4 video asset
+validate_mp4_asset(access_token, processor_id, asset_id, output_assetname) - validade an encoded multi-bitrate MP4 asset
 upload_block_blob(access_token, endpoint, content, content_length) - upload a file as a block blob
-validate_mp4_asset(access_token, processor_id, asset_id, output_assetname) - validade an encoded MP4 asset
-upload_block_blob(access_token, endpoint, content, content_length) - upload file as a block blob
+translate_asset_options(nr) - translate the numeric configuration options of the asset to a Human readable form
+translate_job_state(nr) - translate the numeric job state to a Human readable form
+retrieve_url_content(url) - get an especific url
 ```
