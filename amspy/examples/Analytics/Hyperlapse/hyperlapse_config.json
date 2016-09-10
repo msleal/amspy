@@ -7,7 +7,7 @@
         }
     ],
     "Options": {
-        "Speed":1,
-        "Stabilize":false
+        "Speed":5,
+        "Stabilize":true
     }
 }
