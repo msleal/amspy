@@ -1,7 +1,8 @@
 """
-Copyright (c) 2016, Marcelo Leal
-Description: Simple Azure Media Services Python library
+Copyright (c) 2016, John Deutscher
+Description: Sample Python script for Face Detector processor
 License: MIT (see LICENSE.txt file for details)
+Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-face-and-emotion-detection/ 
 """
 import os
 import json
@@ -32,7 +33,7 @@ from azure.storage.blob import ContentSettings
 
 # Load Azure app defaults
 try:
-	with open('../config.json') as configFile:
+	with open('../../config.json') as configFile:
 		configData = json.load(configFile)
 except FileNotFoundError:
 	print("ERROR: Expecting config.json in examples folder")
@@ -41,14 +42,15 @@ except FileNotFoundError:
 account_name = configData['accountName']
 account_key = configData['accountKey']
 sto_account_name = configData['sto_accountName']
+sto_accountKey = configData['sto_accountKey']
 log_name = configData['logName']
 log_level = configData['logLevel']
 purge_log = configData['purgeLog']
 
 #Initialization...
-print ("\n-----------------------= AMS Py =----------------------");
-print ("Azure Media Analytics - Indexer v1 Sample");
-print ("-------------------------------------------------------\n");
+print ("\n-----------------------= AMS Py =----------------------")
+print ("Azure Media Analytics - Face Detector v1 Sample")
+print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
 if (purge_log.lower() == "yes"):
@@ -70,12 +72,11 @@ ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 ISM_NAME = "movie.ism"
 VIDEO_NAME = "movie.mp4"
 VIDEO_PATH = "../assets/movie.mp4"
-ASSET_FINAL_NAME = "Python Sample-Indexer"
-PROCESSOR_NAME = "Azure Media Indexer"
-AUTH_POLICY = '{"Name":"Open Authorization Policy"}'
-KEY_DELIVERY_TYPE = "2" # 1=PlayReady, 2=AES Envelope Encryption
-SCALE_UNIT = "1" # This will set the Scale Unit of the Streaming Unit to 1 (Each SU = 200mbs)
-INDEXER_V1_XML_PRESET = "indexerv1.xml"
+ASSET_FINAL_NAME = "Python Sample-Face Detection"
+PROCESSOR_NAME = "Azure Media Face Detector"
+MODE = "Face" #or Emotion
+FACE_DETECTION_CONFIG = "face_detection_config.json"
+EMOTION_DETECTION_CONFIG = "emotion_detection_config.json"
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
@@ -83,7 +84,7 @@ if (response.status_code == 200):
         ams_redirected_rest_endpoint = str(response.url)
 else:
         print("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
-        exit(1);
+        exit(1)
 
 
 ######################### PHASE 1: UPLOAD and VALIDATE #########################
@@ -92,7 +93,7 @@ print ("\n001 >>> Creating a Media Asset")
 response = amspy.create_media_asset(access_token, NAME)
 if (response.status_code == 201):
 	resjson = response.json()
-	asset_id = str(resjson['d']['Id']);
+	asset_id = str(resjson['d']['Id'])
 	print("POST Status.............................: " + str(response.status_code))
 	print("Media Asset Name........................: " + NAME)
 	print("Media Asset Id..........................: " + asset_id)
@@ -104,7 +105,7 @@ print ("\n003 >>> Creating a Media Assetfile (for the video file)")
 response = amspy.create_media_assetfile(access_token, asset_id, VIDEO_NAME, "false", "false")
 if (response.status_code == 201):
 	resjson = response.json()
-	video_assetfile_id = str(resjson['d']['Id']);
+	video_assetfile_id = str(resjson['d']['Id'])
 	print("POST Status.............................: " + str(response.status_code))
 	print("Media Assetfile Name....................: " + str(resjson['d']['Name']))
 	print("Media Assetfile Id......................: " + video_assetfile_id)
@@ -118,7 +119,7 @@ duration = "440"
 response = amspy.create_asset_accesspolicy(access_token, "NewUploadPolicy", duration, "2")
 if (response.status_code == 201):
 	resjson = response.json()
-	write_accesspolicy_id = str(resjson['d']['Id']);
+	write_accesspolicy_id = str(resjson['d']['Id'])
 	print("POST Status.............................: " + str(response.status_code))
 	print("Asset Access Policy Id..................: " + write_accesspolicy_id)
 	print("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
@@ -137,10 +138,10 @@ print ("\n007 >>> Creating a write SAS Locator")
 response = amspy.create_sas_locator(access_token, asset_id, write_accesspolicy_id)
 if (response.status_code == 201):
 	resjson = response.json()
-	saslocator_id = str(resjson['d']['Id']);
-	saslocator_baseuri = str(resjson['d']['BaseUri']);
+	saslocator_id = str(resjson['d']['Id'])
+	saslocator_baseuri = str(resjson['d']['BaseUri'])
 	sto_asset_name = os.path.basename(os.path.normpath(saslocator_baseuri))
-	saslocator_cac = str(resjson['d']['ContentAccessComponent']);
+	saslocator_cac = str(resjson['d']['ContentAccessComponent'])
 	print("POST Status.............................: " + str(response.status_code))
 	print("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
 	print("SAS URL Locator Id......................: " + saslocator_id)
@@ -202,8 +203,8 @@ if (response.status_code == 204):
 else:
 	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
-### get the media processor for Indexer v1
-print ("\n015 >>> Getting the Media Processor for Indexer")
+### get the media processor for Face Detecion
+print ("\n015 >>> Getting the Media Processor for Face Detection")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -216,15 +217,21 @@ if (response.status_code == 200):
 else:
         print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
-## create a media encoding job
-print ("\n016 >>> Creating a Media Job to index the content")
-with open(INDEXER_V1_XML_PRESET, mode='r') as file:
-        indexer_preset = file.read()
+## create a Face or Emotion Dection Job
 
-response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, indexer_preset)
+if (MODE == "Face"):
+	print ("\n016 >>> Creating a Face Detection Job to process the content")
+	with open(FACE_DETECTION_CONFIG, mode='r') as file:
+			configuration = file.read()
+else if (MODE == "Emotion"):
+	print ("\n016 >>> Creating an Emotion Detection Job to process the content")
+	with open(EMOTION_DETECTION_CONFIG, mode='r') as file:
+			configuration = file.read()
+
+response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, configuration)
 if (response.status_code == 201):
 	resjson = response.json()
-	job_id = str(resjson['d']['Id']);
+	job_id = str(resjson['d']['Id'])
 	print("POST Status.............................: " + str(response.status_code))
 	print("Media Job Id............................: " + job_id)
 else:
@@ -247,63 +254,35 @@ while (flag):
 		print("GET Status..............................: " + str(response.status_code) + " - Media Job: '" + asset_id + "' Listing ERROR." + str(response.content))
 	time.sleep(5)
 
-## getting the indexed asset id
-print ("\n019 >>> Getting the Encoded Media Asset Id")
+## getting the output Asset id
+print ("\n019 >>> Getting the Indexed Media Asset Id")
 response = amspy.get_url(access_token, joboutputassets_uri, False)
 if (response.status_code == 200):
 	resjson = response.json()
-	encoded_asset_id = resjson['d']['results'][0]['Id']
+	face_asset_id = resjson['d']['results'][0]['Id']
 	print("GET Status..............................: " + str(response.status_code))
-	print("Encoded Media Asset Id..................: " + encoded_asset_id)
+	print("Indexed Media Asset Id..................: " + face_asset_id)
 else:
 	print("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
-### create an asset Read access policy for Downloading the contents
-print ("\n005 >>> Creating an Asset Read only Access Policy")
-duration = "440"
-response = amspy.create_asset_accesspolicy(access_token, "NewDownloadPolicy", duration, "1")
-if (response.status_code == 201):
-	resjson = response.json()
-	read_accesspolicy_id = str(resjson['d']['Id']);
-	print("POST Status.............................: " + str(response.status_code))
-	print("Asset Access Policy Id..................: " + read_accesspolicy_id)
-	print("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
-else:
-	print("POST Status: " + str(response.status_code) + " - Asset Read Access Policy Creation ERROR." + str(response.content))
 
-### create a sas locator
-print ("\n007 >>> Creating a read SAS Locator")
-## INFO: If you need to upload your files immediately, you should set your StartTime value to five minutes before the current time.
-#This is because there may be clock skew between your client machine and Media Services.
-#Also, your StartTime value must be in the following DateTime format: YYYY-MM-DDTHH:mm:ssZ (for example, "2014-05-23T17:53:50Z").
-# EDITED: Not providing starttime is the best approach to be able to upload a file immediatly...
-#starttime = datetime.datetime.now(pytz.timezone(time_zone)).strftime("%Y-%m-%dT%H:%M:%SZ")
-#response = amspy.create_sas_locator(access_token, asset_id, write_accesspolicy_id, starttime)
-response = amspy.create_sas_locator(access_token, asset_id, read_accesspolicy_id)
-if (response.status_code == 201):
-	resjson = response.json()
-	saslocator_id = str(resjson['d']['Id']);
-	saslocator_baseuri = str(resjson['d']['BaseUri']);
-	sto_asset_name = os.path.basename(os.path.normpath(saslocator_baseuri))
-	saslocator_cac = str(resjson['d']['ContentAccessComponent']);
-	print("POST Status.............................: " + str(response.status_code))
-	print("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
-	print("SAS URL Locator Id......................: " + saslocator_id)
-	print("SAS URL Locator Base URI................: " + saslocator_baseuri)
-	print("SAS URL Locator Content Access Component: " + saslocator_cac)
-else:
-	print("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
+# Get Asset by using the list_media_asset method and the Asset ID
+response = amspy.list_media_asset(access_token,face_asset_id)
+if (response.status_code == 200):
+    resjson = response.json()
+    # Get the container name from the Uri
+    outputAssetContainer = resjson['d']['Uri'].split('/')[3]
+    print(outputAssetContainer)
 
-outputAssetContainer = saslocator_baseuri.split('/')[3] 
-print("OuputAssetContainer = "+ outputAssetContainer)
-
-### Use the Azure Blob Blob Service library from the Azure Storage SDK to download just the output WebVTT file
+### Use the Azure Blob Blob Service library from the Azure Storage SDK to download just the output JSON file
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
 generator = block_blob_service.list_blobs(outputAssetContainer)
 for blob in generator:
     print(blob.name)
-    if(blob.name.endswith(".vtt")):
-        blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
-        print("\n\n##### WEB VTT ######")
-        print(blobText.content)
-        block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	if (blob.name.endswith(".json"):
+		print("\n\n##### Output Results ######")
+		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
+		print(blobText.content)
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output" + blob.name)
+	else:
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output" + blob.name)
