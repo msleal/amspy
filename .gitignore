@@ -1,9 +1,15 @@
 # Application files
 amspy/examples/config.json
 # Log...
-amspy/examples/log/aes_workflow.log
+amspy/examples/log/
+amspy/examples/Analytics/log/ 
+# Analytics Outputs
+amspy/examples/Analytics/Output/
 # Python cache...
 __pycache__/
 # PyPI
 amspy.egg-info
 dist
+# VS Code
+.vscode/settings.json
+
