@@ -72,7 +72,7 @@ ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, Enve
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 ISM_NAME = "movie.ism"
 VIDEO_NAME = "movie.mp4"
-VIDEO_PATH = "../assets/movie.mp4"
+VIDEO_PATH = "../../assets/movie.mp4"
 ASSET_FINAL_NAME = "Python Sample-Motion Detection"
 PROCESSOR_NAME = "Azure Media Motion Detector"
 MOTION_CONFIG = "motion_config.json"
@@ -274,10 +274,10 @@ block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=
 generator = block_blob_service.list_blobs(outputAssetContainer)
 for blob in generator:
     print(blob.name)
-	if (blob.name.endswith(".json"):
+	if (blob.name.endswith(".json")):
 		print("\n\n##### Output Results ######")
 		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
 		print(blobText.content)
-		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output" + blob.name)
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
 	else:
-		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output" + blob.name)
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
