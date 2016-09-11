@@ -2,9 +2,20 @@
 amspy/examples/config.json
 # Log...
 amspy/examples/log/
-amspy/examples/Analytics/log/ 
 # Analytics Outputs
 amspy/examples/Analytics/Output/
+amspy/examples/Analytics/Face_Detector/Output/
+amspy/examples/Analytics/Face_Detector/log/
+amspy/examples/Analytics/Face_Redaction/output/
+amspy/examples/Analytics/Face_Redaction/log/
+amspy/examples/Analytics/Hyperlapse/Output/
+amspy/examples/Analytics/Hyperlapse/log/
+amspy/examples/Analytics/MotionDetection/Output/
+amspy/examples/Analytics/MotionDetection/log/
+amspy/examples/Analytics/OCR/Output/
+amspy/examples/Analytics/OCR/log/
+amspy/examples/Analytics/VideoThumbnail/Output/
+amspy/examples/Analytics/VideoThumbnail/log/
 # Python cache...
 __pycache__/
 # PyPI
@@ -12,4 +23,5 @@ amspy.egg-info
 dist
 # VS Code
 .vscode/settings.json
+
 
