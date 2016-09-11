@@ -306,4 +306,4 @@ for blob in generator:
         blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
         print("\n\n##### WEB VTT ######")
         print(blobText.content)
-        block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/indexer_v2/" + blob.name)
+        block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)

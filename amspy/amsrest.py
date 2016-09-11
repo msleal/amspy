@@ -371,7 +371,7 @@ def encode_mezzanine_asset(access_token, processor_id, asset_id, output_assetnam
     assets_path_encoded = urllib.parse.quote(assets_path, safe='')
     endpoint_assets = ''.join([ams_rest_endpoint, assets_path_encoded])
     body = '{ \
-    		"Name":"EncodeMezzanine", \
+    		"Name":"' + output_assetname + '", \
    		"InputMediaAssets":[{ \
        	  		"__metadata":{ \
        	     			"uri":"' + endpoint_assets + '" \

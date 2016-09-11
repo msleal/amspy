@@ -1,8 +1,7 @@
 """
 Copyright (c) 2016, John Deutscher
-Description: Sample Python script for  Hyperlapse media processor
+Description: Sample Python script for Face Redaction processor
 License: MIT (see LICENSE.txt file for details)
-Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-hyperlapse-content/
 """
 import os
 import json
@@ -49,8 +48,7 @@ purge_log = configData['purgeLog']
 
 #Initialization...
 print ("\n-----------------------= AMS Py =----------------------")
-print ("Azure Media Analytics - Hyperlapse Sample")
-print ("for details see: https://azure.microsoft.com/en-us/documentation/articles/media-services-hyperlapse-content/")
+print ("Azure Media Analytics - Face Redaction v1 Sample")
 print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
@@ -73,9 +71,10 @@ ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 ISM_NAME = "movie.ism"
 VIDEO_NAME = "movie.mp4"
 VIDEO_PATH = "../../assets/movie.mp4"
-ASSET_FINAL_NAME = "Python Sample-Hyperlapse"
-PROCESSOR_NAME = "Azure Media Hyperlapse"
-HYPERLAPSE_CONFIG = "hyperlapse_config.json"
+ASSET_FINAL_NAME = "Python Sample-Face Detection"
+PROCESSOR_NAME = "Azure Media Redactor"
+MODE = "Combined"
+FACE_REDACTION_CONFIG = "redaction_config.json"
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
@@ -202,8 +201,8 @@ if (response.status_code == 204):
 else:
 	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
-### get the media processor for Hyperlapse 
-print ("\n015 >>> Getting the Media Processor for Hyperlapse")
+### get the media processor for Face Detecion
+print ("\n015 >>> Getting the Media Processor for Face Detection")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -216,12 +215,12 @@ if (response.status_code == 200):
 else:
         print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
-## create a Hyperlapse Job
+## create a Face or Emotion Dection Job
 
-
-print ("\n016 >>> Creating a Hyperlapse job to process the content")
-with open(HYPERLAPSE_CONFIG, mode='r') as file:
-		configuration = file.read()
+if (MODE == "Combined"):
+	print ("\n016 >>> Creating a Face Redaction Comobined Job to process the content")
+	with open(FACE_REDACTION_CONFIG, mode='r') as file:
+			configuration = file.read()
 
 response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, configuration)
 if (response.status_code == 201):
@@ -250,28 +249,37 @@ while (flag):
 	time.sleep(5)
 
 ## getting the output Asset id
-print ("\n019 >>> Getting the Hyperlapse Media Asset Id")
+print ("\n019 >>> Getting the Indexed Media Asset Id")
 response = amspy.get_url(access_token, joboutputassets_uri, False)
 if (response.status_code == 200):
 	resjson = response.json()
-	output_asset_id = resjson['d']['results'][0]['Id']
+	face_asset_id = resjson['d']['results'][0]['Id']
 	print("GET Status..............................: " + str(response.status_code))
-	print("Output Asset Id..................: " + output_asset_id)
+	print("Indexed Media Asset Id..................: " + face_asset_id)
 else:
 	print("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
 
 # Get Asset by using the list_media_asset method and the Asset ID
-response = amspy.list_media_asset(access_token,output_asset_id)
+response = amspy.list_media_asset(access_token,face_asset_id)
 if (response.status_code == 200):
     resjson = response.json()
     # Get the container name from the Uri
     outputAssetContainer = resjson['d']['Uri'].split('/')[3]
     print(outputAssetContainer)
 
-### Use the Azure Blob Blob Service library from the Azure Storage SDK to download the Hyperlapse results
+### Use the Azure Blob Blob Service library from the Azure Storage SDK to download just the output JSON file
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
 generator = block_blob_service.list_blobs(outputAssetContainer)
+
 for blob in generator:
-    print(blob.name)
-	block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	print(blob.name)
+	if (blob.name.endswith(".json")):
+		print("\n\n##### Output Results ######")
+		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
+		print(blobText.content)
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	else:
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+
+print("Complete.")
