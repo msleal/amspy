@@ -1,0 +1,112 @@
+2016-09-12 15:56:00,143 - INFO:Starting new HTTPS connection (1): wamsprodglobal001acs.accesscontrol.windows.net
+2016-09-12 15:56:01,096 - DEBUG:"POST /v2/OAuth2-13 HTTP/1.1" 200 660
+2016-09-12 15:56:01,110 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:02,298 - DEBUG:"GET /API HTTP/1.1" 301 166
+2016-09-12 15:56:02,304 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:02,663 - DEBUG:"GET /api/ HTTP/1.1" 200 456
+2016-09-12 15:56:02,682 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:03,347 - DEBUG:"POST /API/Assets HTTP/1.1" 301 166
+2016-09-12 15:56:03,354 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:03,748 - DEBUG:"POST /api//Assets HTTP/1.1" 201 2068
+2016-09-12 15:56:03,767 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:04,964 - DEBUG:"POST /API/Files HTTP/1.1" 301 166
+2016-09-12 15:56:04,976 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:05,217 - DEBUG:"POST /api//Files HTTP/1.1" 201 762
+2016-09-12 15:56:05,237 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:05,908 - DEBUG:"POST /API/AccessPolicies HTTP/1.1" 301 166
+2016-09-12 15:56:05,920 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:06,279 - DEBUG:"POST /api//AccessPolicies HTTP/1.1" 201 544
+2016-09-12 15:56:06,297 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:07,077 - DEBUG:"POST /API/Locators HTTP/1.1" 301 166
+2016-09-12 15:56:07,089 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:08,171 - DEBUG:"POST /api//Locators HTTP/1.1" 201 1410
+2016-09-12 15:56:08,294 - INFO:Starting new HTTPS connection (1): wow2ams.blob.core.windows.net
+2016-09-12 15:56:11,994 - DEBUG:"PUT /asset-2f5a46a8-a36b-42c1-9f37-1b9e46fd47f5/movie.mp4?sv=2012-02-12&sr=c&si=28d9cb13-93cf-4502-a30c-88d1a5860fd5&sig=GvhcbwNAS1EgmiNHit8AEaOFl9Ba7bVwIjiwsuXodDw%3D&se=2016-09-12T23%3A16%3A02Z HTTP/1.1" 201 None
+2016-09-12 15:56:12,021 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:12,662 - DEBUG:"PATCH /API%2FFiles%28%27nb%3Acid%3AUUID%3A00a67e7b-fa52-4a70-b04d-67fcdd9780f0%27%29 HTTP/1.1" 301 166
+2016-09-12 15:56:12,674 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:12,963 - DEBUG:"PATCH /api/%2FFiles%28%27nb%3Acid%3AUUID%3A00a67e7b-fa52-4a70-b04d-67fcdd9780f0%27%29 HTTP/1.1" 204 0
+2016-09-12 15:56:12,976 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:13,573 - DEBUG:"DELETE /API%2FLocators%28%27nb%3Alid%3AUUID%3A28d9cb13-93cf-4502-a30c-88d1a5860fd5%27%29 HTTP/1.1" 301 166
+2016-09-12 15:56:13,585 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:14,425 - DEBUG:"DELETE /api/%2FLocators%28%27nb%3Alid%3AUUID%3A28d9cb13-93cf-4502-a30c-88d1a5860fd5%27%29 HTTP/1.1" 204 0
+2016-09-12 15:56:14,432 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:15,211 - DEBUG:"DELETE /API%2FAccessPolicies%28%27nb%3Apid%3AUUID%3Ada3014cb-9746-4da7-abd4-f0f71e99f443%27%29 HTTP/1.1" 301 166
+2016-09-12 15:56:15,223 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:15,611 - DEBUG:"DELETE /api/%2FAccessPolicies%28%27nb%3Apid%3AUUID%3Ada3014cb-9746-4da7-abd4-f0f71e99f443%27%29 HTTP/1.1" 204 0
+2016-09-12 15:56:15,619 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:16,812 - DEBUG:"GET /API/MediaProcessors HTTP/1.1" 301 166
+2016-09-12 15:56:16,819 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:19,065 - DEBUG:"GET /api//MediaProcessors HTTP/1.1" 200 8137
+2016-09-12 15:56:19,075 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:20,268 - DEBUG:"POST /API/Jobs HTTP/1.1" 301 166
+2016-09-12 15:56:20,280 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:22,415 - DEBUG:"POST /api//Jobs HTTP/1.1" 201 1230
+2016-09-12 15:56:22,432 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:23,060 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:23,073 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:23,427 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1216
+2016-09-12 15:56:28,443 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:29,142 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:29,146 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:29,548 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1216
+2016-09-12 15:56:34,564 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:35,360 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:35,366 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:35,728 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:56:40,738 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:41,416 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:41,425 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:41,671 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:56:46,689 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:47,367 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:47,378 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:47,767 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:56:52,784 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:53,420 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:53,432 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:53,646 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:56:58,662 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:56:59,323 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:56:59,328 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:56:59,687 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:04,697 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:05,352 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:05,356 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:05,721 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:10,737 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:11,433 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:11,445 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:11,679 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:16,692 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:17,333 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:17,339 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:17,680 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:22,700 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:23,355 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:23,370 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:23,735 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:28,747 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:29,432 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:29,443 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:29,798 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:34,808 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:35,988 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:35,992 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:36,187 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1237
+2016-09-12 15:57:41,196 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:41,836 - DEBUG:"GET /API/Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 301 166
+2016-09-12 15:57:41,848 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:42,314 - DEBUG:"GET /api//Jobs('nb:jid:UUID:f6454bcc-1e5e-4535-8896-daf715ec6ac7') HTTP/1.1" 200 1261
+2016-09-12 15:57:47,337 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:47,741 - DEBUG:"GET /api/Jobs('nb%3Ajid%3AUUID%3Af6454bcc-1e5e-4535-8896-daf715ec6ac7')/OutputMediaAssets HTTP/1.1" 200 2101
+2016-09-12 15:57:47,757 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:48,525 - DEBUG:"POST /API/AccessPolicies HTTP/1.1" 301 166
+2016-09-12 15:57:48,537 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:48,730 - DEBUG:"POST /api//AccessPolicies HTTP/1.1" 201 546
+2016-09-12 15:57:48,749 - INFO:Starting new HTTPS connection (1): media.windows.net
+2016-09-12 15:57:49,572 - DEBUG:"POST /API/Locators HTTP/1.1" 301 166
+2016-09-12 15:57:49,583 - INFO:Starting new HTTPS connection (1): ams-brso-1-hos-rest-1-1.cloudapp.net
+2016-09-12 15:57:50,637 - DEBUG:"POST /api//Locators HTTP/1.1" 201 1414
+2016-09-12 15:57:50,690 - INFO:Starting new HTTPS connection (1): wow2ams.blob.core.windows.net
+2016-09-12 15:57:50,987 - DEBUG:"GET /asset-2f5a46a8-a36b-42c1-9f37-1b9e46fd47f5?restype=container&comp=list HTTP/1.1" 200 None

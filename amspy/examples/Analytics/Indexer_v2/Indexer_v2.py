@@ -36,7 +36,7 @@ try:
 	with open('../../config.json') as configFile:
 		configData = json.load(configFile)
 except FileNotFoundError:
-	print("ERROR: Expecting config.json in examples folder")
+	print_phase_message("ERROR: Expecting config.json in examples folder")
 	sys.exit()
 
 account_name = configData['accountName']
@@ -68,65 +68,77 @@ access_token = resjson["access_token"]
 
 #Some global vars...
 NAME = "movie"
+COUNTER = 0;
 ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, EnvelopeEncryptionProtected=4
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 ISM_NAME = "movie.ism"
 VIDEO_NAME = "movie.mp4"
-VIDEO_PATH = "../assets/movie.mp4"
+VIDEO_PATH = "../../assets/movie.mp4"
 ASSET_FINAL_NAME = "Python Sample-Indexer-V2"
 PROCESSOR_NAME = "Azure Media Indexer 2 Preview"
-INDEXER_V2_JSON_PRESET = "indexerv2.json"
+INDEXER_V2_JSON_PRESET = "Indexerv2.json"
+
+# Just a simple wrapper function to print the title of each of our phases to the console...
+def print_phase_header(message):
+        global COUNTER;
+        print ("\n[" + str("%02d" % int(COUNTER)) + "] >>> " +  message)
+        COUNTER += 1;
+
+# This wrapper function prints our messages to the console with a timestamp...
+def print_phase_message(message):
+        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print (str(time_stamp) + ": " +  message)
 
 ### get ams redirected url
 response = amspy.get_url(access_token)
 if (response.status_code == 200):
         ams_redirected_rest_endpoint = str(response.url)
 else:
-        print("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
+        print_phase_message("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
         exit(1)
 
 
-######################### PHASE 1: UPLOAD and VALIDATE #########################
+######################### PHASE 1: UPLOAD #########################
 ### create an asset
-print ("\n001 >>> Creating a Media Asset")
+print_phase_header("Creating a Media Asset")
 response = amspy.create_media_asset(access_token, NAME)
 if (response.status_code == 201):
 	resjson = response.json()
 	asset_id = str(resjson['d']['Id'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("Media Asset Name........................: " + NAME)
-	print("Media Asset Id..........................: " + asset_id)
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("Media Asset Name........................: " + NAME)
+	print_phase_message("Media Asset Id..........................: " + asset_id)
 else:
-	print("POST Status.............................: " + str(response.status_code) + " - Media Asset: '" + NAME + "' Creation ERROR." + str(response.content))
+	print_phase_message("POST Status.............................: " + str(response.status_code) + " - Media Asset: '" + NAME + "' Creation ERROR." + str(response.content))
 
 ### create an assetfile
-print ("\n003 >>> Creating a Media Assetfile (for the video file)")
+print_phase_header("Creating a Media Assetfile (for the video file)")
 response = amspy.create_media_assetfile(access_token, asset_id, VIDEO_NAME, "false", "false")
 if (response.status_code == 201):
 	resjson = response.json()
 	video_assetfile_id = str(resjson['d']['Id'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("Media Assetfile Name....................: " + str(resjson['d']['Name']))
-	print("Media Assetfile Id......................: " + video_assetfile_id)
-	print("Media Assetfile IsPrimary...............: " + str(resjson['d']['IsPrimary']))
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("Media Assetfile Name....................: " + str(resjson['d']['Name']))
+	print_phase_message("Media Assetfile Id......................: " + video_assetfile_id)
+	print_phase_message("Media Assetfile IsPrimary...............: " + str(resjson['d']['IsPrimary']))
 else:
-	print("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + VIDEO_NAME + "' Creation ERROR." + str(response.content))
+	print_phase_message("POST Status: " + str(response.status_code) + " - Media Assetfile: '" + VIDEO_NAME + "' Creation ERROR." + str(response.content))
 
 ### create an asset write access policy for uploading
-print ("\n005 >>> Creating an Asset Write Access Policy")
+print_phase_header("Creating an Asset Write Access Policy")
 duration = "440"
 response = amspy.create_asset_accesspolicy(access_token, "NewUploadPolicy", duration, "2")
 if (response.status_code == 201):
 	resjson = response.json()
 	write_accesspolicy_id = str(resjson['d']['Id'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("Asset Access Policy Id..................: " + write_accesspolicy_id)
-	print("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("Asset Access Policy Id..................: " + write_accesspolicy_id)
+	print_phase_message("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
 else:
-	print("POST Status: " + str(response.status_code) + " - Asset Write Access Policy Creation ERROR." + str(response.content))
+	print_phase_message("POST Status: " + str(response.status_code) + " - Asset Write Access Policy Creation ERROR." + str(response.content))
 
 ### create a sas locator
-print ("\n007 >>> Creating a write SAS Locator")
+print_phase_header("Creating a write SAS Locator")
 
 ## INFO: If you need to upload your files immediately, you should set your StartTime value to five minutes before the current time.
 #This is because there may be clock skew between your client machine and Media Services.
@@ -141,13 +153,13 @@ if (response.status_code == 201):
 	saslocator_baseuri = str(resjson['d']['BaseUri'])
 	sto_asset_name = os.path.basename(os.path.normpath(saslocator_baseuri))
 	saslocator_cac = str(resjson['d']['ContentAccessComponent'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
-	print("SAS URL Locator Id......................: " + saslocator_id)
-	print("SAS URL Locator Base URI................: " + saslocator_baseuri)
-	print("SAS URL Locator Content Access Component: " + saslocator_cac)
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
+	print_phase_message("SAS URL Locator Id......................: " + saslocator_id)
+	print_phase_message("SAS URL Locator Base URI................: " + saslocator_baseuri)
+	print_phase_message("SAS URL Locator Content Access Component: " + saslocator_cac)
 else:
-	print("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
+	print_phase_message("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
 
 ### Use the Azure Blob Blob Servic library from the Azure Storage SDK.
 block_blob_service = BlockBlobService(account_name=sto_account_name, sas_token=saslocator_cac[1:])
@@ -155,10 +167,10 @@ block_blob_service = BlockBlobService(account_name=sto_account_name, sas_token=s
 ### Define a callback method to show progress of large uploads
 def uploadCallback(current, total):
 	if (current != None):
-		print('{0:2,f}/{1:2,.0f} MB'.format(current,total/1024/1024))
+		print_phase_message('{0:2,f}/{1:2,.0f} MB'.format(current,total/1024/1024))
 
 ### Start upload the video file
-print ("\n009 >>> Uploading the Video File")
+print_phase_header("Uploading the Video File")
 with open(VIDEO_PATH, mode='rb') as file:
         video_content = file.read()
         video_content_length = len(video_content)
@@ -172,52 +184,52 @@ response = block_blob_service.create_blob_from_path(
 		progress_callback=uploadCallback,
 	)
 if (response == None):
-        print("PUT Status..............................: 201")
-        print("Video File Uploaded.....................: OK")
+        print_phase_message("PUT Status..............................: 201")
+        print_phase_message("Video File Uploaded.....................: OK")
 
 ### update the assetfile metadata after uploading
-print ("\n011 >>> Updating the Video Assetfile")
+print_phase_header("Updating the Video Assetfile")
 response = amspy.update_media_assetfile(access_token, asset_id, video_assetfile_id, video_content_length, VIDEO_NAME)
 if (response.status_code == 204):
-	print("MERGE Status............................: " + str(response.status_code))
-	print("Assetfile Content Length Updated........: " + str(video_content_length))
+	print_phase_message("MERGE Status............................: " + str(response.status_code))
+	print_phase_message("Assetfile Content Length Updated........: " + str(video_content_length))
 else:
-	print("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + VIDEO_NAME + "' Update ERROR." + str(response.content))
+	print_phase_message("MERGE Status............................: " + str(response.status_code) + " - Assetfile: '" + VIDEO_NAME + "' Update ERROR." + str(response.content))
 
 ### delete the locator, so that it can't be used again
-print ("\n013 >>> Deleting the Locator")
+print_phase_header("Deleting the Locator")
 response = amspy.delete_sas_locator(access_token, saslocator_id)
 if (response.status_code == 204):
-	print("DELETE Status...........................: " + str(response.status_code))
-	print("SAS URL Locator Deleted.................: " + saslocator_id)
+	print_phase_message("DELETE Status...........................: " + str(response.status_code))
+	print_phase_message("SAS URL Locator Deleted.................: " + saslocator_id)
 else:
-	print("DELETE Status...........................: " + str(response.status_code) + " - SAS URL Locator: '" + saslocator_id + "' Delete ERROR." + str(response.content))
+	print_phase_message("DELETE Status...........................: " + str(response.status_code) + " - SAS URL Locator: '" + saslocator_id + "' Delete ERROR." + str(response.content))
 
 ### delete the asset access policy
-print ("\n014 >>> Deleting the Acess Policy")
+print_phase_header("Deleting the Acess Policy")
 response = amspy.delete_asset_accesspolicy(access_token, write_accesspolicy_id)
 if (response.status_code == 204):
-	print("DELETE Status...........................: " + str(response.status_code))
-	print("Asset Access Policy Deleted.............: " + write_accesspolicy_id)
+	print_phase_message("DELETE Status...........................: " + str(response.status_code))
+	print_phase_message("Asset Access Policy Deleted.............: " + write_accesspolicy_id)
 else:
-	print("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
+	print_phase_message("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
 ### get the media processor for Indexer v2
-print ("\n015 >>> Getting the Media Processor for Indexer v2")
+print_phase_header("Getting the Media Processor for Indexer v2")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
-        print("GET Status..............................: " + str(response.status_code))
+        print_phase_message("GET Status..............................: " + str(response.status_code))
         for mp in resjson['d']['results']:
                 if(str(mp['Name']) == PROCESSOR_NAME):
                         processor_id = str(mp['Id'])
-                        print("MEDIA Processor Id......................: " + processor_id)
-                        print("MEDIA Processor Name....................: " + PROCESSOR_NAME)
+                        print_phase_message("MEDIA Processor Id......................: " + processor_id)
+                        print_phase_message("MEDIA Processor Name....................: " + PROCESSOR_NAME)
 else:
-        print("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
+        print_phase_message("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
 ## create an INdexer V2 job
-print ("\n016 >>> Creating a Media Job to index the content")
+print_phase_header("Creating a Media Job to index the content")
 with open(INDEXER_V2_JSON_PRESET, mode='r') as file:
         indexer_preset = file.read()
 
@@ -225,13 +237,13 @@ response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, AS
 if (response.status_code == 201):
 	resjson = response.json()
 	job_id = str(resjson['d']['Id'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("Media Job Id............................: " + job_id)
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("Media Job Id............................: " + job_id)
 else:
-	print("POST Status.............................: " + str(response.status_code) + " - Media Job Creation ERROR." + str(response.content))
+	print_phase_message("POST Status.............................: " + str(response.status_code) + " - Media Job Creation ERROR." + str(response.content))
 
 ### list a media job
-print ("\n017 >>> Getting the Media Job Status")
+print_phase_header("Getting the Media Job Status")
 flag = 1
 while (flag):
 	response = amspy.list_media_job(access_token, job_id)
@@ -241,38 +253,38 @@ while (flag):
 		if (resjson['d']['EndTime'] != None):
 			joboutputassets_uri = resjson['d']['OutputMediaAssets']['__deferred']['uri']
 			flag = 0
-		print("GET Status..............................: " + str(response.status_code))
-		print("Media Job Status........................: " + amspy.translate_job_state(job_state))
+		print_phase_message("GET Status..............................: " + str(response.status_code))
+		print_phase_message("Media Job Status........................: " + amspy.translate_job_state(job_state))
 	else:
-		print("GET Status..............................: " + str(response.status_code) + " - Media Job: '" + asset_id + "' Listing ERROR." + str(response.content))
+		print_phase_message("GET Status..............................: " + str(response.status_code) + " - Media Job: '" + asset_id + "' Listing ERROR." + str(response.content))
 	time.sleep(5)
 
 ## getting the indexed asset id
-print ("\n019 >>> Getting the Indexed Media Asset Id")
+print_phase_header("Getting the Indexed Media Asset Id")
 response = amspy.get_url(access_token, joboutputassets_uri, False)
 if (response.status_code == 200):
 	resjson = response.json()
 	indexed_asset_id = resjson['d']['results'][0]['Id']
-	print("GET Status..............................: " + str(response.status_code))
-	print("INdexed Media Asset Id..................: " + indexed_asset_id)
+	print_phase_message("GET Status..............................: " + str(response.status_code))
+	print_phase_message("INdexed Media Asset Id..................: " + indexed_asset_id)
 else:
-	print("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
+	print_phase_message("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
 ### create an asset Read access policy for Downloading the contents
-print ("\n005 >>> Creating an Asset Read only Access Policy")
+print_phase_header("Creating an Asset Read only Access Policy")
 duration = "440"
 response = amspy.create_asset_accesspolicy(access_token, "NewDownloadPolicy", duration, "1")
 if (response.status_code == 201):
 	resjson = response.json()
 	read_accesspolicy_id = str(resjson['d']['Id'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("Asset Access Policy Id..................: " + read_accesspolicy_id)
-	print("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("Asset Access Policy Id..................: " + read_accesspolicy_id)
+	print_phase_message("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
 else:
-	print("POST Status: " + str(response.status_code) + " - Asset Read Access Policy Creation ERROR." + str(response.content))
+	print_phase_message("POST Status: " + str(response.status_code) + " - Asset Read Access Policy Creation ERROR." + str(response.content))
 
 ### create a sas locator
-print ("\n007 >>> Creating a read SAS Locator")
+print_phase_header("Creating a read SAS Locator")
 ## INFO: If you need to upload your files immediately, you should set your StartTime value to five minutes before the current time.
 #This is because there may be clock skew between your client machine and Media Services.
 #Also, your StartTime value must be in the following DateTime format: YYYY-MM-DDTHH:mm:ssZ (for example, "2014-05-23T17:53:50Z").
@@ -286,24 +298,24 @@ if (response.status_code == 201):
 	saslocator_baseuri = str(resjson['d']['BaseUri'])
 	sto_asset_name = os.path.basename(os.path.normpath(saslocator_baseuri))
 	saslocator_cac = str(resjson['d']['ContentAccessComponent'])
-	print("POST Status.............................: " + str(response.status_code))
-	print("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
-	print("SAS URL Locator Id......................: " + saslocator_id)
-	print("SAS URL Locator Base URI................: " + saslocator_baseuri)
-	print("SAS URL Locator Content Access Component: " + saslocator_cac)
+	print_phase_message("POST Status.............................: " + str(response.status_code))
+	print_phase_message("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
+	print_phase_message("SAS URL Locator Id......................: " + saslocator_id)
+	print_phase_message("SAS URL Locator Base URI................: " + saslocator_baseuri)
+	print_phase_message("SAS URL Locator Content Access Component: " + saslocator_cac)
 else:
-	print("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
+	print_phase_message("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
 
 outputAssetContainer = saslocator_baseuri.split('/')[3] 
-print("OuputAssetContainer = "+ outputAssetContainer)
+print_phase_message("OuputAssetContainer = "+ outputAssetContainer)
 
 ### Use the Azure Blob Blob Service library from the Azure Storage SDK to download just the output WebVTT file
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
 generator = block_blob_service.list_blobs(outputAssetContainer)
 for blob in generator:
-    print(blob.name)
-    if(blob.name.endswith(".vtt")):
-        blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
-        print("\n\n##### WEB VTT ######")
-        print(blobText.content)
-        block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	print_phase_message(blob.name)
+	if(blob.name.endswith(".vtt")):
+		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
+		print_phase_message("\n\n##### WEB VTT ######")
+		print(blobText.content)
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
