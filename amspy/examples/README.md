@@ -48,3 +48,27 @@ configuration, authorization policies, and etc), as well as configuring the HLS 
 ```
 export PYTHONDONTWRITEBYTECODE=1; python3 aes_workflow_from_raw.py
 ```
+### Azure Media Analytics Usage Sample Scripts
+A set of scripts that show how to use Azure Media Analytics is available in the amspy/examples/Analytics folder.
+In this folder you will find examples of the following analytics tools:
+
+- Face Detection
+- Face Redaction
+- Hyperlapse
+- Indexer v1
+- Indexer v2 (Preview)
+- Motion Detection
+- OCR
+- Video Thumbnail
+
+Each of the samples includes a single Python script and configuration file for the processor.
+Simply execute the python script to process a source file.
+To modify the source file used, edit the global variable and change the
+VIDEO_PATH to point to your source file.
+
+The script will execute and download the output results of the Media Analytics job into the "output" folder in the example.
+You can modify the settings files for each processor to adjust the output results.
+
+For additional documentation about Azure Media Analytics, plese refer to the page http://aka.ms/mediaanalytics
+
+Please contact us on Twitter -  @MSFTAzureMedia - if you have any questions.
