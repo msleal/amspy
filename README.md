@@ -30,10 +30,10 @@ access_token = resjson["access_token"]
 response = amspy.list_media_asset(access_token)
 if (response.status_code == 200):
         resjson = response.json()
-        print("POST Status.............................: " + str(response.status_code))
+        print("POST Status.....: " + str(response.status_code))
         for ma in resjson['d']['results']:
-                print("Media Asset Name........................: " + ma['Id'])
-                print("Media Asset Id..........................: " + ma['Name'])
+                print("Media Asset Name: " + ma['Id'])
+                print("Media Asset Id..: " + ma['Name'])
 else:
         print("GET Status: " + str(response.status_code) + " ERROR:" + str(response.content))
 ```
