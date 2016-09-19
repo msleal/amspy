@@ -3,19 +3,19 @@ amspy/examples/config.json
 # Log...
 amspy/examples/log/
 # Analytics Outputs
-amspy/examples/Analytics/output/
-amspy/examples/Analytics/Face_Detector/output/
-amspy/examples/Analytics/Face_Detector/log/
-amspy/examples/Analytics/Face_Redaction/output/
-amspy/examples/Analytics/Face_Redaction/log/
-amspy/examples/Analytics/Hyperlapse/output/
-amspy/examples/Analytics/Hyperlapse/log/
-amspy/examples/Analytics/MotionDetection/output/
-amspy/examples/Analytics/MotionDetection/log/
-amspy/examples/Analytics/OCR/output/
-amspy/examples/Analytics/OCR/log/
-amspy/examples/Analytics/VideoThumbnail/output/
-amspy/examples/Analytics/VideoThumbnail/log/
+amspy/examples/analytics/output/
+amspy/examples/analytics/face_detector/output/
+amspy/examples/analytics/face_detector/log/
+amspy/examples/analytics/face_redaction/output/
+amspy/examples/analytics/face_redaction/log/
+amspy/examples/analytics/hyperlapse/output/
+amspy/examples/analytics/hyperlapse/log/
+amspy/examples/analytics/motion_detection/output/
+amspy/examples/analytics/motion_detection/log/
+amspy/examples/analytics/ocr/output/
+amspy/examples/analytics/ocr/log/
+amspy/examples/analytics/video_thumbnail/output/
+amspy/examples/analytics/video_thumbnail/log/
 # Python cache...
 __pycache__/
 # PyPI

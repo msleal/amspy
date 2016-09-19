@@ -38,7 +38,7 @@ else:
         print("GET Status: " + str(response.status_code) + " ERROR:" + str(response.content))
 ```
 ### Azure Media Analytics Usage Sample Scripts
-A set of scripts that show how to use Azure Media Analytics is available in the amspy/examples/Analytics folder. 
+A set of scripts that show how to use Azure Media Analytics is available in the amspy/examples/analytics folder. 
 In this folder you will find examples of the following analytics tools:
 
 - Face Detection
