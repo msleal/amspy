@@ -53,6 +53,8 @@ print ("Azure Media Analytics - Indexer v1 Sample")
 print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
+if (os.path.isdir('./log') != True):
+	os.mkdir('log')
 if (purge_log.lower() == "yes"):
         if (os.path.isfile(log_name)):
                 os.remove(log_name)
