@@ -109,3 +109,7 @@ update_media_assetfile(access_token, parent_asset_id, asset_id, content_length, 
 upload_block_blob(access_token, endpoint, content, content_length) - upload a file as a block blob
 validate_mp4_asset(access_token, processor_id, asset_id, output_assetname) - validade an encoded multi-bitrate MP4 asset
 ```
+
+
+### Sample Movie clip in examples/assets folder:
+The video file in \examples\analytics\assets\movie.mp4 is a clip from "Tears of Steel" courtesy of (CC) Blender Foundation | mango.blender.org

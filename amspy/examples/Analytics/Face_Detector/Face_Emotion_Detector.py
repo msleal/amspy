@@ -53,6 +53,8 @@ print ("Azure Media Analytics - Face Detector v1 Sample")
 print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
+if (os.path.isdir('./log') != True):
+	os.mkdir('log')
 if (purge_log.lower() == "yes"):
         if (os.path.isfile(log_name)):
                 os.remove(log_name)
@@ -70,9 +72,8 @@ NAME = "movie"
 COUNTER = 0;
 ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, EnvelopeEncryptionProtected=4
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
-ISM_NAME = "movie.ism"
 VIDEO_NAME = "movie.mp4"
-VIDEO_PATH = "../../assets/movie.mp4"
+VIDEO_PATH = "../assets/movie.mp4"
 ASSET_FINAL_NAME = "Python Sample-Face Detection"
 PROCESSOR_NAME = "Azure Media Face Detector"
 MODE = "Face" #or Emotion
