@@ -112,4 +112,4 @@ validate_mp4_asset(access_token, processor_id, asset_id, output_assetname) - val
 
 
 ### Sample Movie clip in examples/assets folder:
-movie.mp4 is a clip from "Tears of Steel" courtesy of (CC) Blender Foundation | mango.blender.org
+The video file in \examples\analytics\assets\movie.mp4 is a clip from "Tears of Steel" courtesy of (CC) Blender Foundation | mango.blender.org
