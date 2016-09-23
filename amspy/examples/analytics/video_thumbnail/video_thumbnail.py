@@ -1,8 +1,8 @@
 """
 Copyright (c) 2016, John Deutscher
-Description: Sample Python script for  Motion Detection processor
+Description: Sample Python script for  Video Thumbnail/Summarization processor
 License: MIT (see LICENSE.txt file for details)
-Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-motion-detection/
+Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-video-optical-character-recognition/
 """
 import os
 import json
@@ -49,8 +49,8 @@ purge_log = configData['purgeLog']
 
 #Initialization...
 print ("\n-----------------------= AMS Py =----------------------")
-print ("Azure Media Analytics - Motion Detection Sample")
-print ("for details see: https://azure.microsoft.com/en-us/documentation/articles/media-services-motion-detection/")
+print ("Azure Media Analytics - Video Thumbnail/Summary Sample")
+print ("for details see: https://azure.microsoft.com/en-us/documentation/articles/media-services-video-summarization/")
 print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
@@ -75,9 +75,9 @@ ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, Enve
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 VIDEO_NAME = "movie.mp4"
 VIDEO_PATH = "../assets/movie.mp4"
-ASSET_FINAL_NAME = "Python Sample-Motion Detection"
-PROCESSOR_NAME = "Azure Media Motion Detector"
-MOTION_CONFIG = "motion_config.json"
+ASSET_FINAL_NAME = "Python Sample-Thumbnail"
+PROCESSOR_NAME = "Azure Media Video Thumbnails"
+THUMBNAIL_CONFIG = "thumbnail_config.json"
 
 # Just a simple wrapper function to print the title of each of our phases to the console...
 def print_phase_header(message):
@@ -101,7 +101,7 @@ else:
 
 ######################### PHASE 1: UPLOAD #########################
 ### create an asset
-print_phase_header("Creating a Media Asset")
+print_phase_header ("Creating a Media Asset")
 response = amspy.create_media_asset(access_token, NAME)
 if (response.status_code == 201):
 	resjson = response.json()
@@ -207,7 +207,7 @@ else:
 	print_phase_message("DELETE Status...........................: " + str(response.status_code) + " - SAS URL Locator: '" + saslocator_id + "' Delete ERROR." + str(response.content))
 
 ### delete the asset access policy
-print_phase_header("Deleting the Acess Policy")
+print_phase_header ("Deleting the Acess Policy")
 response = amspy.delete_asset_accesspolicy(access_token, write_accesspolicy_id)
 if (response.status_code == 204):
 	print_phase_message("DELETE Status...........................: " + str(response.status_code))
@@ -215,8 +215,8 @@ if (response.status_code == 204):
 else:
 	print_phase_message("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
-### get the media processor for Motion Detection 
-print_phase_header("Getting the Media Processor for Motion Detection")
+### get the media processor for Thumbnail 
+print_phase_header("Getting the Media Processor for Thumbnail")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -229,11 +229,11 @@ if (response.status_code == 200):
 else:
         print_phase_message("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
-## create a Video Motion Detection Job
+## create a Video Thumbnail Job
 
 
-print_phase_header("Creating a Motion Detection job to process the content")
-with open(MOTION_CONFIG, mode='r') as file:
+print_phase_header("Creating a Video Thumbnail job to process the content")
+with open(THUMBNAIL_CONFIG, mode='r') as file:
 		configuration = file.read()
 
 response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, configuration)
@@ -263,34 +263,27 @@ while (flag):
 	time.sleep(5)
 
 ## getting the output Asset id
-print_phase_header("Getting the Motion Detection Output Asset Id")
+print_phase_header("Getting the Thumbnail Media Asset Id")
 response = amspy.get_url(access_token, joboutputassets_uri, False)
 if (response.status_code == 200):
 	resjson = response.json()
-	motion_asset_id = resjson['d']['results'][0]['Id']
+	thumbnail_asset_id = resjson['d']['results'][0]['Id']
 	print_phase_message("GET Status..............................: " + str(response.status_code))
-	print_phase_message("Motion Detection Output Asset Id..................: " + motion_asset_id)
+	print_phase_message("Thumbnail Media Asset Id................: " + thumbnail_asset_id)
 else:
 	print_phase_message("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
 
 # Get Asset by using the list_media_asset method and the Asset ID
-response = amspy.list_media_asset(access_token,motion_asset_id)
+response = amspy.list_media_asset(access_token,thumbnail_asset_id)
 if (response.status_code == 200):
     resjson = response.json()
     # Get the container name from the Uri
     outputAssetContainer = resjson['d']['Uri'].split('/')[3]
-    print_phase_message(outputAssetContainer)
 
-### Use the Azure Blob Blob Service library from the Azure Storage SDK to download the Motion Detection JSON
+### Use the Azure Blob Blob Service library from the Azure Storage SDK to download the Video Thumbnail
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
 generator = block_blob_service.list_blobs(outputAssetContainer)
 for blob in generator:
-	print_phase_message(blob.name)
-	if (blob.name.endswith(".json")):
-		print_phase_message("\n\n##### Output Results ######")
-		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
-		print(blobText.content)
-		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
-	else:
-		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	print_phase_message("Output File Name........................: " + blob.name)
+	block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)

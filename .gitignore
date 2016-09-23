@@ -5,7 +5,7 @@ amspy/examples/log/
 # Analytics Outputs
 amspy/examples/analytics/output/
 amspy/examples/analytics/face_detector/output/
-amspy/examples/analytics/face_detector/log/*
+amspy/examples/analytics/face_detector/log/
 amspy/examples/analytics/face_redaction/output/
 amspy/examples/analytics/face_redaction/log/
 amspy/examples/analytics/hyperlapse/output/

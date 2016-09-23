@@ -1,8 +1,8 @@
 """
 Copyright (c) 2016, John Deutscher
-Description: Sample Python script for Azure Media Indexer V2
+Description: Sample Python script for Azure Media Indexer V1
 License: MIT (see LICENSE.txt file for details)
-Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-process-content-with-indexer2/
+Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-index-content/
 """
 import os
 import json
@@ -49,8 +49,7 @@ purge_log = configData['purgeLog']
 
 #Initialization...
 print ("\n-----------------------= AMS Py =----------------------")
-print ("Azure Media Analytics - Indexer v2 Preview Sample")
-print ("for details : https://azure.microsoft.com/en-us/documentation/articles/media-services-process-content-with-indexer2/ ")
+print ("Azure Media Analytics - Indexer v1 Sample")
 print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
@@ -75,9 +74,9 @@ ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, Enve
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 VIDEO_NAME = "movie.mp4"
 VIDEO_PATH = "../assets/movie.mp4"
-ASSET_FINAL_NAME = "Python Sample-Indexer-V2"
-PROCESSOR_NAME = "Azure Media Indexer 2 Preview"
-INDEXER_V2_JSON_PRESET = "Indexerv2.json"
+ASSET_FINAL_NAME = "Python Sample-Indexer"
+PROCESSOR_NAME = "Azure Media Indexer"
+INDEXER_V1_XML_PRESET = "indexerv1.xml"
 
 # Just a simple wrapper function to print the title of each of our phases to the console...
 def print_phase_header(message):
@@ -215,8 +214,8 @@ if (response.status_code == 204):
 else:
 	print_phase_message("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
-### get the media processor for Indexer v2
-print_phase_header("Getting the Media Processor for Indexer v2")
+### get the media processor for Indexer v1
+print_phase_header("Getting the Media Processor for Indexer")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -229,9 +228,9 @@ if (response.status_code == 200):
 else:
         print_phase_message("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
-## create an INdexer V2 job
+## create an Indexer v1 job
 print_phase_header("Creating a Media Job to index the content")
-with open(INDEXER_V2_JSON_PRESET, mode='r') as file:
+with open(INDEXER_V1_XML_PRESET, mode='r') as file:
         indexer_preset = file.read()
 
 response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, indexer_preset)
@@ -267,7 +266,7 @@ if (response.status_code == 200):
 	resjson = response.json()
 	indexed_asset_id = resjson['d']['results'][0]['Id']
 	print_phase_message("GET Status..............................: " + str(response.status_code))
-	print_phase_message("INdexed Media Asset Id..................: " + indexed_asset_id)
+	print_phase_message("Indexed Media Asset Id..................: " + indexed_asset_id)
 else:
 	print_phase_message("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
@@ -308,15 +307,14 @@ else:
 	print_phase_message("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
 
 outputAssetContainer = saslocator_baseuri.split('/')[3] 
-print_phase_message("OuputAssetContainer = "+ outputAssetContainer)
 
 ### Use the Azure Blob Blob Service library from the Azure Storage SDK to download just the output WebVTT file
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
 generator = block_blob_service.list_blobs(outputAssetContainer)
 for blob in generator:
-	print_phase_message(blob.name)
-	if(blob.name.endswith(".vtt")):
-		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
-		print_phase_message("\n\n##### WEB VTT ######")
-		print(blobText.content)
-		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+    print_phase_message("Output File Name........................: " + blob.name)
+    if(blob.name.endswith(".vtt")):
+        blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
+        print_phase_message("\n\n##### WEB VTT ######")
+        print("Output File Name........................: " + blobText.content)
+        block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)

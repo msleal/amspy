@@ -1,8 +1,8 @@
 """
 Copyright (c) 2016, John Deutscher
-Description: Sample Python script for  Hyperlapse media processor
+Description: Sample Python script for  Motion Detection processor
 License: MIT (see LICENSE.txt file for details)
-Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-hyperlapse-content/
+Documentation : https://azure.microsoft.com/en-us/documentation/articles/media-services-motion-detection/
 """
 import os
 import json
@@ -49,8 +49,8 @@ purge_log = configData['purgeLog']
 
 #Initialization...
 print ("\n-----------------------= AMS Py =----------------------")
-print ("Azure Media Analytics - Hyperlapse Sample")
-print ("for details see: https://azure.microsoft.com/en-us/documentation/articles/media-services-hyperlapse-content/")
+print ("Azure Media Analytics - Motion Detection Sample")
+print ("for details see: https://azure.microsoft.com/en-us/documentation/articles/media-services-motion-detection/")
 print ("-------------------------------------------------------\n")
 
 #Remove old log file if requested (default behavior)...
@@ -75,9 +75,9 @@ ENCRYPTION = "1" # 0=None, StorageEncrypted=1, CommonEncryptionProtected=2, Enve
 ENCRYPTION_SCHEME = "StorageEncryption" # StorageEncryption or CommonEncryption.
 VIDEO_NAME = "movie.mp4"
 VIDEO_PATH = "../assets/movie.mp4"
-ASSET_FINAL_NAME = "Python Sample-Hyperlapse"
-PROCESSOR_NAME = "Azure Media Hyperlapse"
-HYPERLAPSE_CONFIG = "hyperlapse_config.json"
+ASSET_FINAL_NAME = "Python Sample-Motion Detection"
+PROCESSOR_NAME = "Azure Media Motion Detector"
+MOTION_CONFIG = "motion_config.json"
 
 # Just a simple wrapper function to print the title of each of our phases to the console...
 def print_phase_header(message):
@@ -97,6 +97,7 @@ if (response.status_code == 200):
 else:
         print_phase_message("GET Status: " + str(response.status_code) + " - Getting Redirected URL ERROR." + str(response.content))
         exit(1)
+
 
 ######################### PHASE 1: UPLOAD #########################
 ### create an asset
@@ -214,8 +215,8 @@ if (response.status_code == 204):
 else:
 	print_phase_message("DELETE Status...........................: " + str(response.status_code) + " - Asset Access Policy: '" + write_accesspolicy_id + "' Delete ERROR." + str(response.content))
 
-### get the media processor for Hyperlapse 
-print_phase_header("Getting the Media Processor for Hyperlapse")
+### get the media processor for Motion Detection 
+print_phase_header("Getting the Media Processor for Motion Detection")
 response = amspy.list_media_processor(access_token)
 if (response.status_code == 200):
         resjson = response.json()
@@ -228,11 +229,11 @@ if (response.status_code == 200):
 else:
         print_phase_message("GET Status: " + str(response.status_code) + " - Media Processors Listing ERROR." + str(response.content))
 
-## create a Hyperlapse Job
+## create a Video Motion Detection Job
 
 
-print_phase_header("Creating a Hyperlapse job to process the content")
-with open(HYPERLAPSE_CONFIG, mode='r') as file:
+print_phase_header("Creating a Motion Detection job to process the content")
+with open(MOTION_CONFIG, mode='r') as file:
 		configuration = file.read()
 
 response = amspy.encode_mezzanine_asset(access_token, processor_id, asset_id, ASSET_FINAL_NAME, configuration)
@@ -262,28 +263,34 @@ while (flag):
 	time.sleep(5)
 
 ## getting the output Asset id
-print_phase_header("Getting the Hyperlapse Media Asset Id")
+print_phase_header("Getting the Motion Detection Output Asset Id")
 response = amspy.get_url(access_token, joboutputassets_uri, False)
 if (response.status_code == 200):
 	resjson = response.json()
-	output_asset_id = resjson['d']['results'][0]['Id']
+	motion_asset_id = resjson['d']['results'][0]['Id']
 	print_phase_message("GET Status..............................: " + str(response.status_code))
-	print_phase_message("Output Asset Id..................: " + output_asset_id)
+	print_phase_message("Motion Detection Output Asset Id........: " + motion_asset_id)
 else:
 	print_phase_message("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
 
 # Get Asset by using the list_media_asset method and the Asset ID
-response = amspy.list_media_asset(access_token,output_asset_id)
+response = amspy.list_media_asset(access_token,motion_asset_id)
 if (response.status_code == 200):
     resjson = response.json()
     # Get the container name from the Uri
     outputAssetContainer = resjson['d']['Uri'].split('/')[3]
-    print_phase_message(outputAssetContainer)
+    print_phase_message("Output Asset Name.......................: " + outputAssetContainer)
 
-### Use the Azure Blob Blob Service library from the Azure Storage SDK to download the Hyperlapse results
+### Use the Azure Blob Blob Service library from the Azure Storage SDK to download the Motion Detection JSON
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
 generator = block_blob_service.list_blobs(outputAssetContainer)
 for blob in generator:
-	print_phase_message(blob.name)
-	block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	print_phase_message("Output File Name........................: " + blob.name)
+	if (blob.name.endswith(".json")):
+		print_phase_message("\n\n##### Output Results ######")
+		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
+		print("Output File Name........................: " + blobText.content)
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
+	else:
+		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
