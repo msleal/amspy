@@ -265,49 +265,22 @@ print_phase_header("Getting the Indexed Media Asset Id")
 response = amspy.get_url(access_token, joboutputassets_uri, False)
 if (response.status_code == 200):
 	resjson = response.json()
-	indexed_asset_id = resjson['d']['results'][0]['Id']
+	output_asset_id = resjson['d']['results'][0]['Id']
 	print_phase_message("GET Status..............................: " + str(response.status_code))
-	print_phase_message("INdexed Media Asset Id..................: " + indexed_asset_id)
+	print_phase_message("Indexed output Media Asset Id..................: " + output_asset_id)
 else:
 	print_phase_message("GET Status..............................: " + str(response.status_code) + " - Media Job Output Asset: '" + job_id + "' Getting ERROR." + str(response.content))
 
-### create an asset Read access policy for Downloading the contents
-print_phase_header("Creating an Asset Read only Access Policy")
-duration = "440"
-response = amspy.create_asset_accesspolicy(access_token, "NewDownloadPolicy", duration, "1")
-if (response.status_code == 201):
-	resjson = response.json()
-	read_accesspolicy_id = str(resjson['d']['Id'])
-	print_phase_message("POST Status.............................: " + str(response.status_code))
-	print_phase_message("Asset Access Policy Id..................: " + read_accesspolicy_id)
-	print_phase_message("Asset Access Policy Duration/min........: " + str(resjson['d']['DurationInMinutes']))
+# Get Asset by using the list_media_asset method and the Asset ID
+response = amspy.list_media_asset(access_token,output_asset_id)
+if (response.status_code == 200):
+    resjson = response.json()
+    # Get the container name from the Uri
+    outputAssetContainer = resjson['d']['Uri'].split('/')[3]
+    print(outputAssetContainer)
 else:
-	print_phase_message("POST Status: " + str(response.status_code) + " - Asset Read Access Policy Creation ERROR." + str(response.content))
-
-### create a sas locator
-print_phase_header("Creating a read SAS Locator")
-## INFO: If you need to upload your files immediately, you should set your StartTime value to five minutes before the current time.
-#This is because there may be clock skew between your client machine and Media Services.
-#Also, your StartTime value must be in the following DateTime format: YYYY-MM-DDTHH:mm:ssZ (for example, "2014-05-23T17:53:50Z").
-# EDITED: Not providing starttime is the best approach to be able to upload a file immediatly...
-#starttime = datetime.datetime.now(pytz.timezone(time_zone)).strftime("%Y-%m-%dT%H:%M:%SZ")
-#response = amspy.create_sas_locator(access_token, asset_id, write_accesspolicy_id, starttime)
-response = amspy.create_sas_locator(access_token, asset_id, read_accesspolicy_id)
-if (response.status_code == 201):
-	resjson = response.json()
-	saslocator_id = str(resjson['d']['Id'])
-	saslocator_baseuri = str(resjson['d']['BaseUri'])
-	sto_asset_name = os.path.basename(os.path.normpath(saslocator_baseuri))
-	saslocator_cac = str(resjson['d']['ContentAccessComponent'])
-	print_phase_message("POST Status.............................: " + str(response.status_code))
-	print_phase_message("SAS URL Locator StartTime...............: " + str(resjson['d']['StartTime']))
-	print_phase_message("SAS URL Locator Id......................: " + saslocator_id)
-	print_phase_message("SAS URL Locator Base URI................: " + saslocator_baseuri)
-	print_phase_message("SAS URL Locator Content Access Component: " + saslocator_cac)
-else:
-	print_phase_message("POST Status: " + str(response.status_code) + " - SAS URL Locator Creation ERROR." + str(response.content))
-
-outputAssetContainer = saslocator_baseuri.split('/')[3] 
+    print("Not a 200: " + str(response.status_code))
+    exit(-1)
 
 ### Use the Azure Blob Blob Service library from the Azure Storage SDK to download just the output WebVTT file
 block_blob_service = BlockBlobService(account_name=sto_account_name,account_key=sto_accountKey)
@@ -317,5 +290,5 @@ for blob in generator:
 	if(blob.name.endswith(".vtt")):
 		blobText = block_blob_service.get_blob_to_text(outputAssetContainer, blob.name)
 		print_phase_message("\n\n##### WEB VTT ######")
-		print(blobText.content)
+		print(blobText.content.encode('utf-8'))
 		block_blob_service.get_blob_to_path(outputAssetContainer, blob.name, "output/" + blob.name)
