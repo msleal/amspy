@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration version="2.0"> 
   <input>
-    <!-- [Optional] Metadata of the input media file(s) -->
-    <!-- Format: <metadata key="..." value="..." /> -->
     <metadata key="title" value="Test Indexer Title" />
     <metadata key="description" value="some information about the video that includes keywords" />
   </input>  
   <settings>
   </settings>  
+  <features>
+    <feature name="ASR">  
+      <settings>
+        <add key="Language" value="English"/>
+        <add key="CaptionFormats" value="ttml;webvtt"/>
+        <add key="GenerateAIB" value ="false" />
+        <add key="GenerateKeywords" value ="true" />
+      </settings>
+    </feature>
+  </features>
 </configuration>
