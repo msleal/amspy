@@ -15,7 +15,10 @@ amspy/examples/analytics/motion_detection/log/
 amspy/examples/analytics/ocr/output/
 amspy/examples/analytics/ocr/log/
 amspy/examples/analytics/video_thumbnail/output/
-amspy/examples/analytics/video_thumbnail/log/
+amspy/examples/analytics/indexer_v1/log/
+mspy/examples/analytics/indexer_v1/output/
+amspy/examples/analytics/indexer_v2/log/
+amspy/examples/analytics/indexer_v2/output/
 # Python cache...
 __pycache__/
 # PyPI
